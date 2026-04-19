@@ -1,16 +1,17 @@
 # How to send e-mails from Velociraptor
 
-E-mail is a convenient way to receive notifications from Velociraptor, for
-example when a hunt finishes, when a client is seen for the first time, or when
-an alert is triggered. See
+Velociraptor can send e-mail for a range of purposes: notifying you when a
+flow completes, forwarding alerts from detection artifacts, or reporting
+operational problems. See
 [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
-for a ready-made solution for flow-completion alerts.
+and
+[Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+for artifact-level guides covering those use cases.
 
-This article explains how e-mail sending works in Velociraptor, starting from
-the low-level [`mail()`]({{< ref "/vql_reference/other/mail/" >}}) function and
-working up to the
-[`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})
-artifact, which handles the tricky parts of MIME formatting for you.
+This article covers the mechanics: the [`mail()`]({{< ref "/vql_reference/other/mail/" >}})
+function, SMTP secrets, throttling behaviour, local testing with Mailpit, and
+the [`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})
+artifact that handles MIME encoding.
 
 ---
 
@@ -39,8 +40,8 @@ strongly recommended.
 
 Raw SMTP imposes a hard limit of **998 characters per line** (RFC 2822). If the
 body contains longer lines, some servers will reject or corrupt the message.
-This is easy to hit with log output or structured text. A practical solution is
-to Base64-encode the body and declare the correct transfer encoding header:
+This is easy to hit with log output or structured text. Base64-encoding the
+body and declaring the correct transfer encoding header avoids this:
 
 ```vql
 LET Body = "A long line that might exceed the limit: " + body_text
@@ -140,10 +141,9 @@ repeated failures or unusual traffic patterns may lower your sender reputation
 (affecting spam scoring) or trigger account lockouts. Use a local SMTP
 testing tool instead.
 
-[Mailpit](https://mailpit.axllent.org/) is a lightweight mail catcher with a
-web UI. It accepts any SMTP connection and lets you inspect messages without
-forwarding them anywhere. It also lets you inspect the raw e-mail for easy
-debugging.
+[Mailpit](https://mailpit.axllent.org/) accepts SMTP connections and captures
+messages in a web UI without forwarding them. It also shows the raw message,
+which is useful for debugging encoding issues.
 
 Start it with Docker:
 
@@ -167,7 +167,7 @@ Configure your secret with `server=localhost`, `server_port=1025`, and
 `skip_verify=true`. Open [http://localhost:8025](http://localhost:8025) to
 see incoming messages.
 
-{{< figure src="mailpit_inbox.png" caption="Mailpit web UI showing a test e-mail from Velociraptor" >}}
+{{< figure src="mailpit.png" caption="Mailpit web UI showing a test e-mail from Velociraptor" >}}
 
 ---
 
@@ -222,6 +222,9 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
 )
 FROM scope()
 ```
+{{% expand "The \"Raw\" tab in Mailpit shows how \"multipart/alternative\" is used to send both HTML and plain-text." %}}
+{{< figure src="mailpit_raw.png" caption="An e-mail viewed in its raw format in Mailpit" >}}
+{{% /expand %}}
 
 ###### Attachments
 
@@ -249,7 +252,5 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
 )
 FROM scope()
 ```
-
-{{< figure src="mailpit_html_email.png" caption="An HTML e-mail with attachment, viewed in Mailpit" >}}
 
 Tags: #notifications #smtp #email #configuration
