@@ -1,15 +1,13 @@
 # Using alerts in Velociraptor
 
-<!-- TODO: Expand this article -->
-
 The [`alert()`]({{< ref "/vql_reference/other/alert/" >}}) function routes a
-message into the `Server.Internal.Alerts` event queue. Alerts are intended for
-high-value, low-frequency events that require attention: a detection artifact
-found a match, a honeyfile was accessed, a network connection matched an IOC.
+message into the `Server.Internal.Alerts` event queue. Use it for high-value,
+low-frequency events: a detection artifact found a match, a honeyfile was
+accessed, a network connection matched an IOC.
 
-This is distinct from `log()`, which records diagnostic information in the
-artifact's own log. Alert messages are collected centrally on the server and
-can be acted on by a server event artifact such as
+Unlike `log()`, which records diagnostic information in the artifact's own log,
+alert messages are collected centrally on the server and can be acted on by a
+server event artifact such as
 [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}}),
 which forwards them by e-mail.
 
@@ -41,16 +39,88 @@ shorter interval when testing.
 
 ### What to use `alert()` for
 
-Velociraptor does not use `alert()` internally — it is a user-space mechanism.
-Good candidates are:
+Velociraptor does not use `alert()` internally, and no published artifacts
+currently call it either. There is no rule against publishing artifacts using
+alerts, but by separating the alert logic in separate monitoring artifacts,
+the user has full control over alerting in Velociraptor.
 
-- Detection hits in client event artifacts (file access, process execution,
-  network connections matching IOCs)
-- Sigma or YARA matches from monitoring artifacts
-- Client-side conditions that indicate something worth investigating immediately
+Detection monitoring artifacts are a natural fit, since you probably want to
+be notified immediately if an IoC is detected through client monitoring.
 
-For operational problems — event query errors, failing artifacts — see
+For operational problems (event query errors, failing artifacts), use the
+dedicated error-monitoring artifacts. See
 [How to monitor event artifact errors]({{< ref "/knowledge_base/tips/monitoring_artifact_errors/" >}}).
+
+#### Calling `alert()` from inside an artifact
+
+The simplest approach is to call `alert()` directly in the artifact that
+detects the condition. When a client event artifact calls `alert()`, the VQL
+runtime scope already contains `client_id`, `artifact`, and `artifact_type`.
+`Server.Monitor.Alerts` reads these from the scope and uses them to populate
+the notification with client details and artifact information automatically,
+with no extra work on the caller's part.
+
+#### Calling `alert()` from a server event artifact
+
+If you do not want to modify an existing artifact, write a server event
+artifact that watches the source artifact's output with `watch_monitoring()`
+and calls `alert()` there. Because the alert then originates from the server
+event artifact, the scope's `client_id` is `"server"` and `artifact` is the
+wrapper artifact's name. To make the notification show the original source
+instead, pass `ClientId`, `Artifact`, and `ArtifactType` explicitly in the
+`alert()` call. `Server.Monitor.Alerts` prefers these values from `event_data`
+over its own scope. See the
+[`Server.Monitor.Alerts` description]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
+for the full list of overridable fields.
+
+#### Examples
+
+###### Honeyfile access
+
+A client event artifact monitors decoy files and calls `alert()` directly.
+Client and artifact context are populated from the scope automatically:
+
+```vql
+SELECT alert(
+    name="Honeyfile accessed",
+    Path=FullPath,
+    ProcessName=Process.Name,
+    Pid=Process.Pid,
+    User=Process.Username
+)
+FROM watch_glob(glob="/mnt/sensitive/**")
+```
+
+###### Sigma or YARA detection hits
+
+A server event artifact watches results from a Sigma or YARA artifact and
+alerts on matches. `ClientId` is passed explicitly to replace the default
+`"server"`:
+
+```vql
+SELECT alert(
+    name=Title,
+    dedup=300,
+    ClientId=ClientId,
+    Artifact="Sigma.Windows.Hayabusa.Monitoring",
+    ArtifactType="CLIENT_EVENT",
+    Level=Level,
+    Channel=Channel,
+    EID=EID,
+    Details=Details
+)
+FROM watch_monitoring(artifact="Sigma.Windows.Hayabusa.Monitoring")
+WHERE Level =~ "(?i)high|critical"
+```
+
+Other good candidates:
+
+- Network connections matched against a threat intel feed
+- Process execution from temp directories or other unusual paths
+- Writes to registry persistence locations (Run keys, services)
+- DNS queries to known bad domains
+- Repeated authentication failures exceeding a threshold
+- New local administrator accounts created
 
 ---
 
@@ -58,7 +128,8 @@ For operational problems — event query errors, failing artifacts — see
 
 Any keyword arguments passed to `alert()` beyond `name` and `dedup` are
 available in `event_data` when the alert is received by `Server.Monitor.Alerts`.
-Pass whatever fields help identify the event:
+Pass whatever fields help identify the event. The more context, the more useful
+the notification:
 
 ```vql
 SELECT alert(
@@ -73,9 +144,36 @@ SELECT alert(
 FROM ...
 ```
 
+If a context field contains a nested dict or array, `Server.Monitor.Alerts`
+flattens it with `FlattenContext` (on by default). A single `Details` argument
+containing a complex nested value:
+
+| Key | Value |
+| --- | ----- |
+| Details | {"EventID": 1, "Image": "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "Hashes": {"SHA256": "A1B2C3D4E5F60718293A4B5C6D7E8F90123456789ABCDEF0011223344556677"}, "Parent": {"Image": "C:\Windows\explorer.exe", "ProcessId": 4120}, "Connections": [{"DestinationIp": "198.51.100.42", "DestinationPort": 443}]} |
+
+becomes:
+
+| Key | Value |
+| --- | ----- |
+| Details.EventID | 1 |
+| Details.Image | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe |
+| Details.Hashes.SHA256 | A1B2C3D4E5F60718293A4B5C6D7E8F90123456789ABCDEF0011223344556677 |
+| Details.Parent.Image | C:\Windows\explorer.exe |
+| Details.Parent.ProcessId | 4120 |
+| Details.Connections.0.DestinationIp | 198.51.100.42 |
+| Details.Connections.0.DestinationPort | 443 |
+
 ---
 
 ### Receiving alerts by e-mail
+
+Alerts on their own are not useful unless you get notified. There are many ways
+to achieve this. For instance, by calling a web hook or an API to create
+notifications in services like Slack, Mattermost, Teams, Google Chat or other
+message apps. Sending e-mails is another good alternative, and this is the
+method that will be used in this article. Look through the artifact documentation,
+including the exchange artifact reference, for other notification artifacts.
 
 [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
 watches `Server.Internal.Alerts` and sends an e-mail for each matching alert.
@@ -98,8 +196,12 @@ Key parameters:
 
 #### Severity
 
-If your alert context includes a field such as `level` or `severity`, you can
-use `SeverityTransforms` to map it to a normalised value. For example:
+`severity` and `level` are not special fields. They are just free-form
+keyword arguments passed to `alert()` like any other context. `Server.Monitor.Alerts`
+gives them meaning through `SeverityTransforms`: it reads named fields from the
+context and maps their values to a normalised severity string. If your alert
+context already includes a field like `level` or `severity` (for instance from
+a Sigma rule), you can map it to a common scale. For example:
 
 ```
 Member,Regex,Replace
@@ -109,15 +211,5 @@ level,(?i)critical,high
 
 Set `SeverityThreshold` to `["medium", "high"]` to suppress low-severity
 alerts. The derived severity appears in the notification subject and body.
-
----
-
-### Example: honeyfile detection
-
-<!-- TODO: full example artifact + screenshot -->
-
-A client event artifact monitors a set of sensitive files for access. When a
-match is found, `alert()` is called with the file path, the process name and
-PID, and the accessing user.
 
 Tags: #alerts #vql #detection #notifications

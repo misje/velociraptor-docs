@@ -104,8 +104,8 @@ To add an SMTP secret:
 {{< figure src="add_smtp_secret.png" caption="Adding an SMTP Creds secret" >}}
 
 When defining and using secrets, in most cases you do not need to set all fields.
-The fields you leave empty may be overriden in the functions using the secret.
-`Server.Utils.SendEmail` expects most fields to be defined in the secret, but
+The fields you leave empty may be overridden in the functions using the secret.
+`Generic.Utils.SendEmail` expects most fields to be defined in the secret, but
 lets you override `from` (`Sender`).
 
 Once the secret exists, pass its name to `mail()` or `Generic.Utils.SendEmail`

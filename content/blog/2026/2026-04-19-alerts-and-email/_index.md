@@ -5,7 +5,7 @@ description: |
     e-mail notifications for flow completions, detection hits, and operational
     errors.
 date: 2026-04-19T00:00:00Z
-draft: true
+draft: false
 tags:
   - alerts
   - notifications
@@ -18,8 +18,7 @@ tags:
 Velociraptor runs a lot of things silently in the background: event queries on
 endpoints, server-side monitoring, hunts, scheduled collections. Getting
 notified when something finishes, fails, or finds a match requires some
-configuration. This post walks through a set of new exchange artifacts that
-cover the most common notification needs, and explains how they fit together.
+configuration. This post covers those artifacts and how they fit together.
 
 ## The building blocks
 
@@ -52,6 +51,7 @@ Some example use cases:
 
 - Get notified when an offline client finally completes a collection.
 - Audit all use of EXECVE-permission artifacts.
+- Get notified when a collection fails
 - Notify the device owner when data is collected from their endpoint.
 
 See [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
@@ -95,9 +95,8 @@ context formatting.
 
 <!-- TODO: screenshot of an error alert e-mail -->
 
-Event artifacts can fail silently. A missing executable, a VQL syntax error, an
-eBPF conflict — all of these write to the monitoring log but produce no visible
-notification.
+Event artifacts can fail silently. A missing executable, a VQL syntax error, a
+failing `upload_s3()` call: all write to the monitoring log with no visible notification.
 
 [`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
 and

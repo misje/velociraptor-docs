@@ -1,11 +1,14 @@
 # How to monitor event artifact errors
 
-<!-- TODO: Expand this article -->
-
 Client and server event artifacts run continuously in the background, and when
-they fail the errors are written to the monitoring log — not surfaced anywhere
-visible. A VQL syntax error, a missing executable, an eBPF policy conflict:
-all of these can silently break monitoring that you depend on.
+they fail the errors are written to the monitoring log, not surfaced anywhere
+visible. A VQL syntax error, a missing executable, a failed S3 upload or unsuccessful
+JSON parsing: all of these can silently break monitoring.
+
+Monitoring logs are available in the **Server Events** interface, but you are not
+notified about errors or warnings in these logs out of the box.
+
+![Server event logs for a selected artifact](server_event_logs.png)
 
 [`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
 and
@@ -14,22 +17,19 @@ periodically inspect those logs and call `alert()` for matching entries, which
 can then be forwarded by e-mail via
 [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}}).
 
----
-
-### Server.Monitor.Client.Errors.Alert
-
-Inspects the monitoring logs for all clients that have active event artifacts.
-Useful for catching errors in artifacts like file access monitors, eBPF probes,
-or network monitors that run on endpoints.
-
-<!-- TODO: Screenshot of IncludeFilter configuration -->
-
----
 
 ### Server.Monitor.Errors.Alert
 
-Same as above, but for server event artifacts. Useful for catching errors in
-`Server.Monitor.Alerts` itself, or in any other server-side monitoring artifact.
+If you have any custom server event artifacts, you have likely configured some automation, like fetching data from APIs, uploading data to S3/Elastic etc.
+You probably want to be notified if any of this automation fails.
+
+### Server.Monitor.Client.Errors.Alert
+
+Unlike server event artifacts, client event artifacts run on many endpoints.
+You probably do not want the same kind of log monitoring as for server event
+artifacts, but this artifact allows you to do so, if deemed necessary. Perhaps
+you run important monitoring on some tagged endpoints, and it is critical that
+this monitoring is running without errors.
 
 ---
 
@@ -50,7 +50,7 @@ the same way and is applied after `IncludeFilter`.
 {{% notice warning %}}
 
 Many errors from native VQL functions are logged at level `DEFAULT`, not
-`ERROR`. Make sure your filters include `DEFAULT` if you want to catch these.
+`ERROR`. Include `DEFAULT` in your filters to catch these.
 
 {{% /notice %}}
 
