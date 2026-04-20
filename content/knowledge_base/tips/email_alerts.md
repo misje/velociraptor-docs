@@ -11,11 +11,9 @@ deciding whether to send a notification.
 An SMTP secret is required. See
 [How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}}).
 
----
+![Flow completion notification from FileFinder looking for files of interest](filefinder.png)
 
 ### Installation
-
-<!-- TODO: Screenshot of adding the artifact as a server event monitor -->
 
 If your server has internet access, run
 [`Server.Import.Extras`]({{< ref "/artifact_references/pages/server.import.extras/" >}})
@@ -27,22 +25,19 @@ Add `Server.Monitor.FlowCompletion` as a server event artifact. Set `Secret` to 
 of your SMTP secret. Configure at least one recipient in `Recipients`, or
 enable `NotifyExecutor` to notify whoever scheduled the flow.
 
----
-
 ### Filtering
 
 By default, `Server.Monitor.FlowCompletion` notifies on all flows except
-`Generic.Client.Info`. The main parameters for controlling what triggers a
+`(Custom.)Generic.Client.Info`. The main parameters for controlling what triggers a
 notification are:
 
-- `ArtifactsToAlertOn` — regex; only flows collecting matching artifacts notify
-- `ArtifactsToIgnore` — regex; suppresses notifications for single-artifact flows
-- `ClientLabelsToAlertOn` / `ClientLabelsToIgnore` — filter by client label
-- `NotifyHunts` — include flows that are part of a hunt (off by default)
-- `DelayThreshold` — only notify if the flow took longer than N seconds to
-  complete (default 10 s); useful for skipping flows that complete immediately
-
----
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+| `ArtifactsToAlertOn` | regex | Only flows collecting matching artifacts notify |
+| `ArtifactsToIgnore` | regex | Suppresses notifications for single-artifact flows |
+| `ClientLabelsToAlertOn` / `ClientLabelsToIgnore` | regex | Filter by client label |
+| `NotifyHunts` | bool | Include flows that are part of a hunt (off by default) |
+| `DelayThreshold` | int | Only notify if the flow took longer than N seconds to complete (default 10 s) |
 
 ### Throttling
 
@@ -51,8 +46,6 @@ The default is 10 seconds. Set it to `-1` to disable throttling once you have
 confirmed the configuration works correctly. See the
 [throttling section]({{< ref "/knowledge_base/tips/sending_email/#throttling" >}})
 in the e-mail setup guide for how dropped messages are logged.
-
----
 
 ### E-mail content
 
@@ -63,23 +56,31 @@ client details, flow details, and optionally:
 - JSONL or CSV attachments (`IncludeResultAttachmentFrom`)
 - Direct download links to uploaded files (`IncludeUploadsTableRows`)
 
-{{< figure src="mail_flow_completion.png" caption="An HTML flow completion notification in Mailpit" >}}
-
 For `IncludeResultTableFrom`, rows, columns, and cell values are automatically truncated
 when they exceed the hard limits: 100 rows, 4 columns (`ResultTableMaxColumns`), and
 10,000 characters per cell. Tables with many columns render poorly in e-mail clients even
 within these limits. Only configure inline tables for specific artifact sources with
 compact, predictable output, and use the `Columns` regex to select only the fields you need.
 
+For example, to include shell command output and a compact network connection summary:
+
+| Source | Columns | MaxRows | CellLimit |
+| ------ | ------- | ------- | --------- |
+| bash\|powershell | Stdout\|Stderr | 20 | 1000 |
+| Windows\.Network\.Netstat | RemoteAddr\|ProcessName\|Pid | 30 | 200 |
+
+![An HTML flow completion notification in Mailpit](bash_results.png)
+
 `IncludeResultAttachmentFrom` has no row or column limits, but if the total size of all
 attachments exceeds `AttachmentsMaxMiB` (default 100 MiB), all attachments are dropped.
 Keep the source selection specific here as well.
 
----
-
 ### Example use cases
 
-<!-- TODO: screenshots and full parameter tables for each example -->
+`Server.Monitor.FlowCompletion` may be used in many ways. Some examples follow.
+If you need to run several of these in parallel, you may have to create your
+own artifacts calling `Server.Monitor.FlowCompletion` individually with different
+arguments.
 
 #### Notify the analyst who ran the collection
 
@@ -152,5 +153,13 @@ If client metadata includes the device owner's e-mail address, set
 collection on their device finishes. This can run alongside `Recipients` and
 `NotifyExecutor`, so the analyst, a central mailbox, and the device owner all
 receive the notification independently.
+
+## See also
+
+- Send e-mail on flow completion: [`Server.Monitor.FlowCompletion`]({{< ref "/exchange/artifacts/pages/server.monitor.flowcompletion/" >}})
+- [How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}})
+- [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+- [Alerts and e-mail notifications in Velociraptor]({{< ref "/blog/2026/2026-04-19-alerts-and-email/" >}})
+
 
 Tags: #email #notifications #flows #configuration

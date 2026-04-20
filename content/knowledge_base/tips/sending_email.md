@@ -96,12 +96,23 @@ Creds**. This keeps credentials out of artifact parameters and notebook cells.
 
 To add an SMTP secret:
 
-1. Open the Velociraptor GUI and navigate to **Server Artifacts → Manage Server
-   Secrets**.
+1. Open the Velociraptor GUI, navigate to the welcome page (click the
+   Velociraptor icon), and then **Manage Server Secrets**.
+
+   ![Enter secret management from the welcome page](welcome_secret.svg)
+
 2. Click **Add Secret**, choose type **SMTP Creds**, give it a name (e.g.
    `my_smtp_secret`), and fill in the SMTP server details.
 
-{{< figure src="add_smtp_secret.png" caption="Adding an SMTP Creds secret" >}}
+   ![Adding an SMTP Creds secret](add_smtp_secret.png)
+
+3. Give access to the secret to **VelociraptorServer (Server Event Runner)**,
+   as well as other users, as needed. VelociraptorServer needs access to the
+   secret in order to send e-mails from server event queries.
+
+   ![Modify the secret in order to give access to it](secret_access.svg)
+
+   ![VelociraptorServer given access to SMTP secret](secret_access2.png)
 
 When defining and using secrets, in most cases you do not need to set all fields.
 The fields you leave empty may be overridden in the functions using the secret.
@@ -120,7 +131,7 @@ If `mail()` is called within `period` seconds of the previous successful send,
 the message is silently dropped and an error is logged. The default `period` is
 **60 seconds**.
 
-{{% notice warning %}}
+{{% notice info %}}
 
 When an e-mail is dropped, `mail()` logs `ERROR:mail: Send too fast,
 suppressing.` (not as an error — log level `DEFAULT` is used) and returns an
@@ -167,7 +178,7 @@ Configure your secret with `server=localhost`, `server_port=1025`, and
 `skip_verify=true`. Open [http://localhost:8025](http://localhost:8025) to
 see incoming messages.
 
-{{< figure src="mailpit.png" caption="Mailpit web UI showing a test e-mail from Velociraptor" >}}
+![Mailpit web UI showing a test e-mail from Velociraptor](mailpit.png)
 
 ---
 
@@ -223,7 +234,7 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
 FROM scope()
 ```
 {{% expand "The \"Raw\" tab in Mailpit shows how \"multipart/alternative\" is used to send both HTML and plain-text." %}}
-{{< figure src="mailpit_raw.png" caption="An e-mail viewed in its raw format in Mailpit" >}}
+![An e-mail viewed in its raw format in Mailpit](mailpit_raw.png)
 {{% /expand %}}
 
 ###### Attachments
@@ -252,5 +263,13 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
 )
 FROM scope()
 ```
+
+## See also
+
+- Built-in e-mail sending function: [`mail()`]({{< ref "/vql_reference/other/mail/" >}})
+- Full MIME encoding, HTML, and attachments: [`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})
+- [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
+- [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+
 
 Tags: #notifications #smtp #email #configuration

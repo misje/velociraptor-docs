@@ -192,7 +192,7 @@ Key parameters:
   the notification
 - `FlattenContext` — flatten nested dicts in the context for readability
 
-{{< figure src="alert_email.png" caption="An alert notification in Mailpit" >}}
+![An alert notification in Mailpit](alert_email.png)
 
 #### Severity
 
@@ -211,5 +211,14 @@ level,(?i)critical,high
 
 Set `SeverityThreshold` to `["medium", "high"]` to suppress low-severity
 alerts. The derived severity appears in the notification subject and body.
+
+## See also
+
+- Create a server-side alert: [`alert()`]({{< ref "/vql_reference/other/alert/" >}})
+- Forward alerts by e-mail: [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
+- [How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}})
+- [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
+- [How to monitor event artifact errors]({{< ref "/knowledge_base/tips/monitoring_artifact_errors/" >}})
+- [Alerts and e-mail notifications in Velociraptor]({{< ref "/blog/2026/2026-04-19-alerts-and-email/" >}})
 
 Tags: #alerts #vql #detection #notifications

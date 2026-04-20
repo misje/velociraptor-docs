@@ -87,4 +87,12 @@ artifacts, pointing all of them at the same SMTP secret. See
 [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
 for `Server.Monitor.Alerts` configuration details.
 
+## See also
+
+- Monitor client event artifact errors: [`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
+- Monitor server event artifact errors: [`Server.Monitor.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.errors.alert/" >}})
+- Forward alerts by e-mail: [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
+- [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+- [Alerts and e-mail notifications in Velociraptor]({{< ref "/blog/2026/2026-04-19-alerts-and-email/" >}})
+
 Tags: #alerts #monitoring #notifications #troubleshooting
