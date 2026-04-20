@@ -3,7 +3,7 @@
 The [`alert()`]({{< ref "/vql_reference/other/alert/" >}}) function routes a
 message into the `Server.Internal.Alerts` event queue. Use it for high-value,
 low-frequency events: a detection artifact found a match, a honeyfile was
-accessed, a network connection matched an IOC.
+accessed, a network connection matched an IoC.
 
 Unlike `log()`, which records diagnostic information in the artifact's own log,
 alert messages are collected centrally on the server and can be acted on by a

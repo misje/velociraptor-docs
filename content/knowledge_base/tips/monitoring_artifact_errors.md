@@ -10,9 +10,9 @@ notified about errors or warnings in these logs out of the box.
 
 ![Server event logs for a selected artifact](server_event_logs.png)
 
-[`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
-and
 [`Server.Monitor.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.errors.alert/" >}})
+and
+[`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
 periodically inspect those logs and call `alert()` for matching entries, which
 can then be forwarded by e-mail via
 [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}}).
@@ -47,7 +47,7 @@ optional `Severity` column and any additional custom columns:
 Rows are matched top-to-bottom; the first match wins. `ExcludeFilter` works
 the same way and is applied after `IncludeFilter`.
 
-{{% notice warning %}}
+{{% notice info %}}
 
 Many errors from native VQL functions are logged at level `DEFAULT`, not
 `ERROR`. Include `DEFAULT` in your filters to catch these.

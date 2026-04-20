@@ -70,7 +70,7 @@ and forwarded by e-mail.
 
 Velociraptor itself does not currently use `alert()` — it is entirely a
 user-space mechanism. Detection artifacts are a natural fit: a honeyfile
-monitor, a YARA scanner, a network connection check against an IOC list. When
+monitor, a YARA scanner, a network connection check against an IoC list. When
 a match is found, call `alert()` with whatever context helps you act on the
 finding.
 
