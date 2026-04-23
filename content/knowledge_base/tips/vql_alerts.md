@@ -5,20 +5,20 @@ message into the `Server.Internal.Alerts` event queue. Use it for high-value,
 low-frequency events: a detection artifact found a match, a honeyfile was
 accessed, a network connection matched an IoC.
 
-Unlike `log()`, which records diagnostic information in the artifact's own log,
+Unlike [`log()`]({{< ref "/vql_reference/popular/log/" >}}), which records diagnostic information in the artifact's own log,
 alert messages are collected centrally on the server and can be acted on by a
 server event artifact such as
 [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}}),
 which forwards them by e-mail.
 
----
-
 ### Creating an alert
 
+FIXME: REPLACE:
 ```vql
 SELECT alert(
-    name="Honeyfile accessed",
-    Path=FullPath,
+    name=format(format='Honeyfile "%v" accessed', args=FileName),
+    FileName=FileName,
+    PID=Pid
     ProcessName=Process.Name,
     Pid=Process.Pid
 )
@@ -63,7 +63,7 @@ with no extra work on the caller's part.
 #### Calling `alert()` from a server event artifact
 
 If you do not want to modify an existing artifact, write a server event
-artifact that watches the source artifact's output with `watch_monitoring()`
+artifact that watches the source artifact's output with [`watch_monitoring()`]({{< ref "/vql_reference/event/watch_monitoring/" >}})
 and calls `alert()` there. Because the alert then originates from the server
 event artifact, the scope's `client_id` is `"server"` and `artifact` is the
 wrapper artifact's name. To make the notification show the original source
@@ -77,19 +77,49 @@ for the full list of overridable fields.
 
 ###### Honeyfile access
 
-A client event artifact monitors decoy files and calls `alert()` directly.
-Client and artifact context are populated from the scope automatically:
+A client event artifact monitors decoy files using the exchange artifact
+[`Linux.Detection.Honeyfiles`]({{< ref "/exchange/artifacts/pages/linux.detection.honeyfiles/" >}}). A server event artifact is created that listens to events
+from this artifact and creates alerts for every file access:
 
-```vql
-SELECT alert(
-    name="Honeyfile accessed",
-    Path=FullPath,
-    ProcessName=Process.Name,
-    Pid=Process.Pid,
-    User=Process.Username
-)
-FROM watch_glob(glob="/mnt/sensitive/**")
+```yaml
+name: Server.Monitor.HoneyFileAccess
+description: |
+  Create an alert for every time a honey file is access on a client.
+
+  The alert name includes the client's FQDN, so deduplication is performed per
+  client.
+
+type: SERVER_EVENT
+
+sources:
+  - query: |
+      SELECT
+          alert(
+            name=format(
+              format='Honey file "%v" accessed in %v',
+              args=(FileName, client_info(client_id=ClientId).os_info.hostname)),
+            ClientId=ClientId,
+            Artifact="Linux.Detection.Honeyfiles",
+            ArtifactType="CLIENT_EVENT",
+            Level="HIGH",
+            `File name`=FileName,
+            PID=Pid,
+            `Process name`=ProcessName,
+            `Process info`=ProcInfo)
+      FROM watch_monitoring(artifact="Linux.Detection.Honeyfiles")
 ```
+
+As previously mentioned, the client ID and artifact details are overridden so that
+it feels like the alert originates from the client event artifact (and not this server
+event artifact). An alternative would be to modify the original artifact and use `alert()` directly.
+
+The resulting e-mail will look something like this:
+
+![An ssh key accessed by Wazuh, triggering an alert](alert.png)
+
+Since the client hostname is included in the alert `name`, alerts will be repeated
+for every client. If you want to deduplicate the alert only on the name of the file
+accessed, remove the client hostname from the alert name.
 
 ###### Sigma or YARA detection hits
 
@@ -117,12 +147,10 @@ Other good candidates:
 
 - Network connections matched against a threat intel feed
 - Process execution from temp directories or other unusual paths
-- Writes to registry persistence locations (Run keys, services)
+- Writes to registry persistence locations (run keys, services)
 - DNS queries to known bad domains
 - Repeated authentication failures exceeding a threshold
 - New local administrator accounts created
-
----
 
 ### Adding context
 
@@ -164,7 +192,42 @@ becomes:
 | Details.Connections.0.DestinationIp | 198.51.100.42 |
 | Details.Connections.0.DestinationPort | 443 |
 
----
+#### Including all columns from the source query
+
+If you want to include every column from the source query, which may be necessary
+since the columns may differ, you can writing something like
+
+```vql
+LET Results = SELECT *
+  FROM watch_monitoring(artifact="My.Client.Event.Artifact")
+
+SELECT
+    alert(`**`=to_dict(item=_value) + dict(name="(The alert name)",
+                                           Severity="medium"))
+FROM items(item=Results)
+```
+
+This utilises [argument unpacking](docs/vql/fundamentals/#argument-unpacking). Note
+the order of dict addition: by adding the dict with `name` and `Severity` to the
+query values, and not the other way around, we ensure that these key arguments
+are not overridden.
+
+You should also consider filtering the columns with [`column_filter()`](vql_reference/popular/column_filter/),
+if you want to exclude certain columns or ensure that only relevant columns
+are included:
+
+```vql
+LET Results = SELECT *
+  FROM watch_monitoring(artifact="My.Client.Event.Artifact"))
+
+SELECT
+    alert(`**`=to_dict(item=_value) + dict(name="(The alert name)",
+                                           Severity="medium"))
+FROM items(item={
+    SELECT *
+    FROM column_filter(query=Results, exclude='^(foo|bar|baz)$')
+  })
+```
 
 ### Receiving alerts by e-mail
 
@@ -184,15 +247,14 @@ secret.
 
 Key parameters:
 
-- `Secret` — SMTP secret name (required)
-- `Recipients` — who to notify
-- `SeverityTransforms` — derive a normalised severity string from context fields
-- `SeverityThreshold` — only notify for alerts at or above a given severity
-- `ContextInclude` / `ContextExclude` — control which context fields appear in
-  the notification
-- `FlattenContext` — flatten nested dicts in the context for readability
-
-![An alert notification in Mailpit](alert_email.png)
+| Parameter | Description |
+| --------- | ----------- |
+| `Secret` | [SMTP secret](/knowledge_base/tips/sending_email/#smtp-secret) name (required) |
+| `Recipients` | Who to notify |
+| `SeverityTransforms` | Derive a normalised severity string from context fields |
+| `SeverityThreshold` | Only notify for alerts at or above a given severity |
+| `ContextInclude` / `ContextExclude` | Control which context fields appear in the notification |
+| `FlattenContext` | Flatten nested dicts in the context for readability |
 
 #### Severity
 
@@ -220,5 +282,6 @@ alerts. The derived severity appears in the notification subject and body.
 - [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
 - [How to monitor event artifact errors]({{< ref "/knowledge_base/tips/monitoring_artifact_errors/" >}})
 - [Alerts and e-mail notifications in Velociraptor]({{< ref "/blog/2026/2026-04-19-alerts-and-email/" >}})
+
 
 Tags: #alerts #vql #detection #notifications

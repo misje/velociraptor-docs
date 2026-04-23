@@ -11,7 +11,9 @@ deciding whether to send a notification.
 An SMTP secret is required. See
 [How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}}).
 
-![Flow completion notification from FileFinder looking for files of interest](filefinder.png)
+![Flow completion notification from FileFinder looking for files of interest](ff_client.png)
+
+![Flow completion notification from FileFinder looking for files of interest (continued)](ff_flow.png)
 
 ### Installation
 
@@ -62,14 +64,16 @@ when they exceed the hard limits: 100 rows, 4 columns (`ResultTableMaxColumns`),
 within these limits. Only configure inline tables for specific artifact sources with
 compact, predictable output, and use the `Columns` regex to select only the fields you need.
 
-For example, to include shell command output and a compact network connection summary:
+For example, to include shell command output, a compact network connection summary
+and results from querying disk usage:
 
 | Source | Columns | MaxRows | CellLimit |
 | ------ | ------- | ------- | --------- |
 | bash\|powershell | Stdout\|Stderr | 20 | 1000 |
 | Windows\.Network\.Netstat | RemoteAddr\|ProcessName\|Pid | 30 | 200 |
+| DiskSpace$ | Filesystem\|Size\|Avail\|Use% | | |
 
-![An HTML flow completion notification in Mailpit](bash_results.png)
+![Results from the DiskSpace artifact, including a jsonl attachment](ds_results.png)
 
 `IncludeResultAttachmentFrom` has no row or column limits, but if the total size of all
 attachments exceeds `AttachmentsMaxMiB` (default 100 MiB), all attachments are dropped.
@@ -116,7 +120,7 @@ notifications regardless of `ArtifactsToIgnore`.
 
 Set `ArtifactPermToAlertOn` to `EXECVE` and `DelayThreshold` to `0` to get a
 notification for every completed flow that includes an artifact requiring shell
-access. Set `Recipients` to a security mailbox.
+access.
 
 To include the command output directly in the e-mail body, configure
 `IncludeResultTableFrom`:
