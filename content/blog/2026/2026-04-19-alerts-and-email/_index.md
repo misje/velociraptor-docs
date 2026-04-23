@@ -25,16 +25,16 @@ configuration. This post covers those artifacts and how they fit together.
 Three things underpin all e-mail notifications in Velociraptor:
 
 - **SMTP secrets** store connection credentials. See
-  [How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}}).
-- **[`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})**
+  [How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/).
+- **[`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)**
   handles MIME encoding, HTML, and attachments, so other artifacts do not have
   to.
-- **[`alert()`]({{< ref "/vql_reference/other/alert/" >}})** routes a message
+- **[`alert()`](/vql_reference/other/alert/)** routes a message
   to `Server.Internal.Alerts`, a central server-side queue that server event
   artifacts can watch and act on.
 
 If you have not set up SMTP yet, start with the
-[sending e-mail guide]({{< ref "/knowledge_base/tips/sending_email/" >}}).
+[sending e-mail guide](/knowledge_base/tips/sending_email/).
 It also covers testing locally with Mailpit, which is useful before connecting
 a real mail server.
 
@@ -42,7 +42,7 @@ a real mail server.
 
 <!-- TODO: screenshot of a flow completion e-mail -->
 
-[`Server.Monitor.FlowCompletion`]({{< ref "/exchange/artifacts/pages/server.monitor.flowcompletion/" >}})
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
 sends an e-mail whenever a client flow completes. It supports filtering by
 artifact name, client label, hunt participation, flow outcome, and more, and
 can include inline result tables or attachments in the notification.
@@ -54,18 +54,18 @@ Some example use cases:
 - Get notified when a collection fails
 - Notify the device owner when data is collected from their endpoint.
 
-See [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
+See [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
 for a full configuration guide.
 
 ## Alerts
 
 <!-- TODO: screenshot of an alert e-mail -->
 
-The [`alert()`]({{< ref "/vql_reference/other/alert/" >}}) function lets a VQL
+The [`alert()`](/vql_reference/other/alert/) function lets a VQL
 artifact signal that something worth immediate attention has happened. Unlike
 `log()`, which writes to the artifact's own log, `alert()` routes the message
 to `Server.Internal.Alerts` on the server, where it can be picked up by
-[`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
 and forwarded by e-mail.
 
 Velociraptor itself does not currently use `alert()` — it is entirely a
@@ -87,7 +87,7 @@ FROM ...
 `Server.Monitor.Alerts` picks that up and sends an HTML e-mail with the alert
 context, client details, and optional severity classification.
 
-See [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+See [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
 for the full picture, including the `dedup` parameter, severity transforms, and
 context formatting.
 
@@ -98,15 +98,15 @@ context formatting.
 Event artifacts can fail silently. A missing executable, a VQL syntax error, a
 failing `upload_s3()` call: all write to the monitoring log with no visible notification.
 
-[`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
+[`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/)
 and
-[`Server.Monitor.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.errors.alert/" >}})
+[`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
 periodically inspect those logs and call `alert()` for entries that match a
 configurable filter. Combined with `Server.Monitor.Alerts`, this means you get
 an e-mail whenever a monitoring artifact on a client or on the server starts
 failing.
 
-See [How to monitor event artifact errors]({{< ref "/knowledge_base/tips/monitoring_artifact_errors/" >}}).
+See [How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/).
 
 ## Putting it together
 

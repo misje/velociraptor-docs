@@ -2,32 +2,32 @@
 
 <!-- TODO: Expand this article -->
 
-[`Server.Monitor.FlowCompletion`]({{< ref "/exchange/artifacts/pages/server.monitor.flowcompletion/" >}})
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
 sends an e-mail when a client flow completes, with support for HTML formatting,
 inline result tables, and file attachments. It monitors
 `System.Flow.Completion` and applies a configurable set of filters before
 deciding whether to send a notification.
 
 An SMTP secret is required. See
-[How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}}).
+[How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/).
 
 ![Flow completion notification from FileFinder looking for files of interest](ff_client.png)
 
 ![Flow completion notification from FileFinder looking for files of interest (continued)](ff_flow.png)
 
-### Installation
+## Installation
 
 If your server has internet access, run
-[`Server.Import.Extras`]({{< ref "/artifact_references/pages/server.import.extras/" >}})
+[`Server.Import.Extras`](/artifact_references/pages/server.import.extras/)
 to import all exchange artifacts, including `Server.Monitor.FlowCompletion`. Otherwise,
 copy the artifact definition manually from the
-[Artifact Exchange]({{< ref "/exchange/artifacts/pages/server.monitor.flowcompletion/" >}}).
+[Artifact Exchange](/exchange/artifacts/pages/server.monitor.flowcompletion/).
 
 Add `Server.Monitor.FlowCompletion` as a server event artifact. Set `Secret` to the name
 of your SMTP secret. Configure at least one recipient in `Recipients`, or
 enable `NotifyExecutor` to notify whoever scheduled the flow.
 
-### Filtering
+## Filtering
 
 By default, `Server.Monitor.FlowCompletion` notifies on all flows except
 `(Custom.)Generic.Client.Info`. The main parameters for controlling what triggers a
@@ -41,15 +41,15 @@ notification are:
 | `NotifyHunts` | bool | Include flows that are part of a hunt (off by default) |
 | `DelayThreshold` | int | Only notify if the flow took longer than N seconds to complete (default 10 s) |
 
-### Throttling
+## Throttling
 
 `SendInterval` controls how many seconds must pass between notifications.
 The default is 10 seconds. Set it to `-1` to disable throttling once you have
 confirmed the configuration works correctly. See the
-[throttling section]({{< ref "/knowledge_base/tips/sending_email/#throttling" >}})
+[throttling section](/knowledge_base/tips/sending_email/#throttling)
 in the e-mail setup guide for how dropped messages are logged.
 
-### E-mail content
+## E-mail content
 
 `Server.Monitor.FlowCompletion` sends HTML by default (`HTML=true`). The message includes
 client details, flow details, and optionally:
@@ -79,14 +79,14 @@ and results from querying disk usage:
 attachments exceeds `AttachmentsMaxMiB` (default 100 MiB), all attachments are dropped.
 Keep the source selection specific here as well.
 
-### Example use cases
+## Example use cases
 
 `Server.Monitor.FlowCompletion` may be used in many ways. Some examples follow.
 If you need to run several of these in parallel, you may have to create your
 own artifacts calling `Server.Monitor.FlowCompletion` individually with different
 arguments.
 
-#### Notify the analyst who ran the collection
+### Notify the analyst who ran the collection
 
 Enable `NotifyExecutor`. If the Velociraptor username is an e-mail address,
 the result is sent directly to whoever scheduled the flow, with no fixed
@@ -97,7 +97,7 @@ the result is sent directly to whoever scheduled the flow, with no fixed
 This works well as a general setting so analysts naturally receive results from
 their own collections without needing to poll the GUI.
 
-#### Notify when an offline client finally checks in
+### Notify when an offline client finally checks in
 
 You have scheduled a collection on an offline client.
 Set `DelayThreshold` to something larger than the expected round-trip time
@@ -106,7 +106,7 @@ wait. Use `NotifyExecutor` to send the result to the analyst who scheduled it,
 and set `IncludeResultAttachmentFrom` to attach the results directly to the
 e-mail so the analyst does not need to open the GUI at all.
 
-#### Get notified when hunt flows fail
+### Get notified when hunt flows fail
 
 You are running a large hunt and want to know about failing clients without
 being flooded by success notifications. Leave `NotifyHunts` off (so successful
@@ -116,7 +116,7 @@ flows in the hunt will still notify, regardless of the `NotifyHunts` setting.
 Combine with `IgnoreArtifactFilters` in `ErrorHandling` if you want failure
 notifications regardless of `ArtifactsToIgnore`.
 
-#### Audit shell and EXECVE artifact use
+### Audit shell and EXECVE artifact use
 
 Set `ArtifactPermToAlertOn` to `EXECVE` and `DelayThreshold` to `0` to get a
 notification for every completed flow that includes an artifact requiring shell
@@ -130,7 +130,7 @@ To include the command output directly in the e-mail body, configure
 | bash\|powershell | Stdout\|Stderr | 20 | 1000 |
 | generic\.client\.vql$ | .+ | | 3000 |
 
-#### Alert on results from priority clients
+### Alert on results from priority clients
 
 Apply the label `notify_results` to clients that warrant immediate attention
 regardless of other filters: a server under active investigation, a VIP's
@@ -142,7 +142,7 @@ The same mechanism works for uploads: use `NotifyIfUploadsLabels` with a label
 such as `notify_uploads` on clients where any file collection should always
 trigger a notification.
 
-#### New client enrolled
+### New client enrolled
 
 Set `NewClientArtifacts` to a regex matching the artifacts you collect on
 enrollment (e.g. `Generic.Client.Info`). When a client that is newer than
@@ -150,7 +150,7 @@ enrollment (e.g. `Generic.Client.Info`). When a client that is newer than
 regardless of other filters. Useful for getting an e-mail whenever a new
 endpoint appears on the server.
 
-#### Notify the device owner
+### Notify the device owner
 
 If client metadata includes the device owner's e-mail address, set
 `NotifyMetadataEMail` to that field name. The owner is notified whenever a
@@ -160,10 +160,10 @@ receive the notification independently.
 
 ## See also
 
-- Send e-mail on flow completion: [`Server.Monitor.FlowCompletion`]({{< ref "/exchange/artifacts/pages/server.monitor.flowcompletion/" >}})
-- [How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}})
-- [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
-- [Alerts and e-mail notifications in Velociraptor]({{< ref "/blog/2026/2026-04-19-alerts-and-email/" >}})
+- Send e-mail on flow completion: [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
+- [How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/)
+- [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
+- [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
 
 Tags: #email #notifications #flows #configuration

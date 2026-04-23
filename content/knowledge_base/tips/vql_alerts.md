@@ -1,17 +1,17 @@
 # Using alerts in Velociraptor
 
-The [`alert()`]({{< ref "/vql_reference/other/alert/" >}}) function routes a
+The [`alert()`](/vql_reference/other/alert/) function routes a
 message into the `Server.Internal.Alerts` event queue. Use it for high-value,
 low-frequency events: a detection artifact found a match, a honeyfile was
 accessed, a network connection matched an IoC.
 
-Unlike [`log()`]({{< ref "/vql_reference/popular/log/" >}}), which records diagnostic information in the artifact's own log,
+Unlike [`log()`](/vql_reference/popular/log/), which records diagnostic information in the artifact's own log,
 alert messages are collected centrally on the server and can be acted on by a
 server event artifact such as
-[`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}}),
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/),
 which forwards them by e-mail.
 
-### Creating an alert
+## Creating an alert
 
 FIXME: REPLACE:
 ```vql
@@ -29,7 +29,7 @@ The `name` argument is required. All other keyword arguments are passed through
 as context and appear in the notification. The more relevant context you add,
 the more useful the resulting notification will be.
 
-#### Deduplication
+### Deduplication
 
 By default, identical alert names are suppressed for 2 hours
 (`dedup=7200`). Set `dedup=-1` to disable deduplication entirely, or set a
@@ -37,7 +37,7 @@ shorter interval when testing.
 
 ---
 
-### What to use `alert()` for
+## What to use `alert()` for
 
 Velociraptor does not use `alert()` internally, and no published artifacts
 currently call it either. There is no rule against publishing artifacts using
@@ -49,9 +49,9 @@ be notified immediately if an IoC is detected through client monitoring.
 
 For operational problems (event query errors, failing artifacts), use the
 dedicated error-monitoring artifacts. See
-[How to monitor event artifact errors]({{< ref "/knowledge_base/tips/monitoring_artifact_errors/" >}}).
+[How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/).
 
-#### Calling `alert()` from inside an artifact
+### Calling `alert()` from inside an artifact
 
 The simplest approach is to call `alert()` directly in the artifact that
 detects the condition. When a client event artifact calls `alert()`, the VQL
@@ -60,25 +60,25 @@ runtime scope already contains `client_id`, `artifact`, and `artifact_type`.
 the notification with client details and artifact information automatically,
 with no extra work on the caller's part.
 
-#### Calling `alert()` from a server event artifact
+### Calling `alert()` from a server event artifact
 
 If you do not want to modify an existing artifact, write a server event
-artifact that watches the source artifact's output with [`watch_monitoring()`]({{< ref "/vql_reference/event/watch_monitoring/" >}})
+artifact that watches the source artifact's output with [`watch_monitoring()`](/vql_reference/event/watch_monitoring/)
 and calls `alert()` there. Because the alert then originates from the server
 event artifact, the scope's `client_id` is `"server"` and `artifact` is the
 wrapper artifact's name. To make the notification show the original source
 instead, pass `ClientId`, `Artifact`, and `ArtifactType` explicitly in the
 `alert()` call. `Server.Monitor.Alerts` prefers these values from `event_data`
 over its own scope. See the
-[`Server.Monitor.Alerts` description]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
+[`Server.Monitor.Alerts` description](/exchange/artifacts/pages/server.monitor.alerts/)
 for the full list of overridable fields.
 
-#### Examples
+### Examples
 
 ###### Honeyfile access
 
 A client event artifact monitors decoy files using the exchange artifact
-[`Linux.Detection.Honeyfiles`]({{< ref "/exchange/artifacts/pages/linux.detection.honeyfiles/" >}}). A server event artifact is created that listens to events
+[`Linux.Detection.Honeyfiles`](/exchange/artifacts/pages/linux.detection.honeyfiles/). A server event artifact is created that listens to events
 from this artifact and creates alerts for every file access:
 
 ```yaml
@@ -152,7 +152,7 @@ Other good candidates:
 - Repeated authentication failures exceeding a threshold
 - New local administrator accounts created
 
-### Adding context
+## Adding context
 
 Any keyword arguments passed to `alert()` beyond `name` and `dedup` are
 available in `event_data` when the alert is received by `Server.Monitor.Alerts`.
@@ -192,7 +192,7 @@ becomes:
 | Details.Connections.0.DestinationIp | 198.51.100.42 |
 | Details.Connections.0.DestinationPort | 443 |
 
-#### Including all columns from the source query
+### Including all columns from the source query
 
 If you want to include every column from the source query, which may be necessary
 since the columns may differ, you can writing something like
@@ -229,7 +229,7 @@ FROM items(item={
   })
 ```
 
-### Receiving alerts by e-mail
+## Receiving alerts by e-mail
 
 Alerts on their own are not useful unless you get notified. There are many ways
 to achieve this. For instance, by calling a web hook or an API to create
@@ -238,10 +238,10 @@ message apps. Sending e-mails is another good alternative, and this is the
 method that will be used in this article. Look through the artifact documentation,
 including the exchange artifact reference, for other notification artifacts.
 
-[`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
 watches `Server.Internal.Alerts` and sends an e-mail for each matching alert.
 If your server has internet access, run
-[`Server.Import.Extras`]({{< ref "/artifact_references/pages/server.import.extras/" >}})
+[`Server.Import.Extras`](/artifact_references/pages/server.import.extras/)
 to import it. Then add it as a server event artifact and point it at your SMTP
 secret.
 
@@ -256,7 +256,7 @@ Key parameters:
 | `ContextInclude` / `ContextExclude` | Control which context fields appear in the notification |
 | `FlattenContext` | Flatten nested dicts in the context for readability |
 
-#### Severity
+### Severity
 
 `severity` and `level` are not special fields. They are just free-form
 keyword arguments passed to `alert()` like any other context. `Server.Monitor.Alerts`
@@ -276,12 +276,12 @@ alerts. The derived severity appears in the notification subject and body.
 
 ## See also
 
-- Create a server-side alert: [`alert()`]({{< ref "/vql_reference/other/alert/" >}})
-- Forward alerts by e-mail: [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
-- [How to send e-mails from Velociraptor]({{< ref "/knowledge_base/tips/sending_email/" >}})
-- [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
-- [How to monitor event artifact errors]({{< ref "/knowledge_base/tips/monitoring_artifact_errors/" >}})
-- [Alerts and e-mail notifications in Velociraptor]({{< ref "/blog/2026/2026-04-19-alerts-and-email/" >}})
+- Create a server-side alert: [`alert()`](/vql_reference/other/alert/)
+- Forward alerts by e-mail: [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+- [How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/)
+- [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
+- [How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/)
+- [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
 
 Tags: #alerts #vql #detection #notifications

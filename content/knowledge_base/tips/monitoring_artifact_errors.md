@@ -10,20 +10,20 @@ notified about errors or warnings in these logs out of the box.
 
 ![Server event logs for a selected artifact](server_event_logs.png)
 
-[`Server.Monitor.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.errors.alert/" >}})
+[`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
 and
-[`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
-periodically inspect those logs and call [`alert()`]({{< ref "/vql_reference/other/alert/" >}}) for matching entries, which
+[`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/)
+periodically inspect those logs and call [`alert()`](/vql_reference/other/alert/) for matching entries, which
 can then be forwarded by e-mail via
-[`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}}).
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/).
 
 
-### Server.Monitor.Errors.Alert
+## Server.Monitor.Errors.Alert
 
 If you have any custom server event artifacts, you have likely configured some automation, like fetching data from APIs, uploading data to S3/Elastic etc.
 You probably want to be notified if any of this automation fails.
 
-### Server.Monitor.Client.Errors.Alert
+## Server.Monitor.Client.Errors.Alert
 
 Unlike server event artifacts, client event artifacts run on many endpoints.
 You probably do not want the same kind of log monitoring as for server event
@@ -33,7 +33,7 @@ this monitoring is running without errors.
 
 ---
 
-### Configuring filters
+## Configuring filters
 
 Both artifacts share the same filter model. `IncludeFilter` is a CSV table
 with columns `Artifact`, `Level`, and `Message` (all regexes), plus an
@@ -51,12 +51,12 @@ the same way and is applied after `IncludeFilter`.
 
 Many errors from native VQL functions are logged at level `DEFAULT`, not
 `ERROR`. Include `DEFAULT` in your filters to catch these.
-[`Server.Monitor.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.errors.alert/" >}})
+[`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
 includes a list of known functions that log at `DEFAULT`.
 
 {{% /notice %}}
 
-#### Custom columns
+### Custom columns
 
 Any column added to `IncludeFilter` beyond the built-in ones is passed through
 as extra context on the alert. This is useful for attaching a human-readable
@@ -69,7 +69,7 @@ description or a suggested action to a known error pattern:
 
 ---
 
-### Deduplication
+## Deduplication
 
 Both artifacts suppress repeated alerts using `DedupInterval` (default 3600 s).
 Deduplication is keyed on the alert name, which includes the artifact name, so
@@ -78,24 +78,24 @@ log directly if you suspect there are more errors than the alerts indicate.
 
 ---
 
-### Routing to e-mail
+## Routing to e-mail
 
 If your server has internet access, run
-[`Server.Import.Extras`]({{< ref "/artifact_references/pages/server.import.extras/" >}})
+[`Server.Import.Extras`](/artifact_references/pages/server.import.extras/)
 to import all three artifacts at once. Otherwise, copy the definitions manually
-from the Artifact Exchange. Then add [`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}}),
-[`Server.Monitor.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.errors.alert/" >}}), and [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}}) as server event
+from the Artifact Exchange. Then add [`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/),
+[`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/), and [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) as server event
 artifacts, pointing all of them at the same SMTP secret. See
-[Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+[Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
 for `Server.Monitor.Alerts` configuration details.
 
 ## See also
 
-- Monitor client event artifact errors: [`Server.Monitor.Client.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.client.errors.alert/" >}})
-- Monitor server event artifact errors: [`Server.Monitor.Errors.Alert`]({{< ref "/exchange/artifacts/pages/server.monitor.errors.alert/" >}})
-- Forward alerts by e-mail: [`Server.Monitor.Alerts`]({{< ref "/exchange/artifacts/pages/server.monitor.alerts/" >}})
-- [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
-- [Alerts and e-mail notifications in Velociraptor]({{< ref "/blog/2026/2026-04-19-alerts-and-email/" >}})
+- Monitor client event artifact errors: [`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/)
+- Monitor server event artifact errors: [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
+- Forward alerts by e-mail: [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+- [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
+- [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
 
 Tags: #alerts #monitoring #notifications #troubleshooting

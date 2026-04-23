@@ -3,21 +3,21 @@
 Velociraptor can send e-mail for a range of purposes: notifying you when a
 flow completes, forwarding alerts from detection artifacts, or reporting
 operational problems. See
-[How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
+[How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
 and
-[Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+[Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
 for artifact-level guides covering those use cases.
 
-This article covers the mechanics: the [`mail()`]({{< ref "/vql_reference/other/mail/" >}})
+This article covers the mechanics: the [`mail()`](/vql_reference/other/mail/)
 function, SMTP secrets, throttling behaviour, local testing with Mailpit, and
-the [`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})
+the [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
 artifact that handles MIME encoding.
 
 ---
 
-### The `mail()` function
+## The `mail()` function
 
-The [`mail()`]({{< ref "/vql_reference/other/mail/" >}}) function is the
+The [`mail()`](/vql_reference/other/mail/) function is the
 built-in VQL primitive for sending e-mail. It connects to an SMTP server and
 sends a single message:
 
@@ -33,10 +33,10 @@ FROM scope()
 
 SMTP configuration (server, port, username, password) can be supplied inline
 via `server`, `server_port`, `auth_username`, and `auth_password`, but using a
-[secret]({{< ref "/knowledge_base/tips/sending_email/#smtp-secret" >}}) is
+[secret](/knowledge_base/tips/sending_email/#smtp-secret) is
 strongly recommended.
 
-#### Line length limit
+### Line length limit
 
 Raw SMTP imposes a hard limit of **998 characters per line** (RFC 2822). If the
 body contains longer lines, some servers will reject or corrupt the message.
@@ -61,11 +61,11 @@ FROM scope()
 
 {{% notice tip %}}
 This encoding is handled automatically by the
-[`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})
-artifact described [below]({{< ref "/knowledge_base/tips/sending_email/#the-genericutilssendemail-artifact" >}}).
+[`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
+artifact described [below](/knowledge_base/tips/sending_email/#the-genericutilssendemail-artifact).
 {{% /notice %}}
 
-#### Sending HTML
+### Sending HTML
 
 To send HTML instead of plain text, pass a `Content-Type: text/html` header:
 
@@ -83,15 +83,15 @@ FROM scope()
 ```
 
 For multi-part messages (HTML + plain-text fallback) or attachments, use
-[`Generic.Utils.SendEmail`]({{< ref "/knowledge_base/tips/sending_email/#the-genericutilssendemail-artifact" >}})
+[`Generic.Utils.SendEmail`](/knowledge_base/tips/sending_email/#the-genericutilssendemail-artifact)
 instead.
 
 ---
 
-### SMTP secret
+## SMTP secret
 
 The recommended way to supply SMTP credentials is via a
-[server secret]({{< ref "/docs/gui/#server-secrets" >}}) of type **SMTP
+[server secret](/docs/gui/#server-secrets) of type **SMTP
 Creds**. This keeps credentials out of artifact parameters and notebook cells.
 
 To add an SMTP secret:
@@ -124,7 +124,7 @@ via the `secret` parameter.
 
 ---
 
-### Throttling
+## Throttling
 
 Velociraptor rate-limits outgoing e-mail **globally across the entire server**.
 If `mail()` is called within `period` seconds of the previous successful send,
@@ -145,7 +145,7 @@ throttling window.
 
 ---
 
-### Testing locally with Mailpit
+## Testing locally with Mailpit
 
 Sending test e-mails against a real SMTP server can have unintended consequences:
 repeated failures or unusual traffic patterns may lower your sender reputation
@@ -182,9 +182,9 @@ see incoming messages.
 
 ---
 
-### The `Generic.Utils.SendEmail` artifact
+## The `Generic.Utils.SendEmail` artifact
 
-The [`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})
+The [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
 artifact builds a properly-encoded MIME message and then calls `mail()` for
 you. It handles Base64 line-wrapping, multipart/alternative (HTML + plain-text
 fallback), and file attachments.
@@ -266,10 +266,10 @@ FROM scope()
 
 ## See also
 
-- Built-in e-mail sending function: [`mail()`]({{< ref "/vql_reference/other/mail/" >}})
-- Full MIME encoding, HTML, and attachments: [`Generic.Utils.SendEmail`]({{< ref "/artifact_references/pages/generic.utils.sendemail/" >}})
-- [How to set up e-mail notifications for flow completions]({{< ref "/knowledge_base/tips/email_alerts/" >}})
-- [Using alerts in Velociraptor]({{< ref "/knowledge_base/tips/vql_alerts/" >}})
+- Built-in e-mail sending function: [`mail()`](/vql_reference/other/mail/)
+- Full MIME encoding, HTML, and attachments: [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
+- [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
+- [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
 
 
 Tags: #notifications #smtp #email #configuration
