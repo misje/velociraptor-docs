@@ -1,9 +1,15 @@
 # How to monitor event artifact errors
 
 Client and server event artifacts run continuously in the background, and when
-they fail the errors are written to the monitoring log, not surfaced anywhere
-visible. A VQL syntax error, a missing executable, a failed S3 upload or unsuccessful
-JSON parsing: all of these can silently break monitoring.
+they fail the errors are written to the monitoring log. Event queries
+produce a lot of logs with various severity levels (DEBUG, INFO, WARN,
+ERROR). Some of these log entries, especially errors, are worth
+paything attention to, since they indicate that something has failed.
+Since event queries, especially server event queries, are typically used
+for important monitoring and automation, you want to be notified when
+anything goes wrong. A VQL syntax error, a missing executable, a failed
+S3 upload or unsuccessful JSON parsing — all of these can silently break
+monitoring.
 
 Monitoring logs are available in the **Server Events** interface, but you are not
 notified about errors or warnings in these logs out of the box.
@@ -29,7 +35,8 @@ Unlike server event artifacts, client event artifacts run on many endpoints.
 You probably do not want the same kind of log monitoring as for server event
 artifacts, but this artifact allows you to do so, if deemed necessary. Perhaps
 you run important monitoring on some tagged endpoints, and it is critical that
-this monitoring is running without errors.
+this monitoring is running without errors. If you rely on the process tracker,
+ETW/EVTX or ePBF monitoring, you want to know if this monitoring fails.
 
 ---
 
@@ -64,10 +71,9 @@ description or a suggested action to a known error pattern:
 
 | Artifact | Level | Message | Severity | Explanation |
 | -------- | ----- | ------- | -------- | ----------- |
-| .+ | DEFAULT | watch_ebpf: .+ already exist | medium | eBPF policy conflict |
+| .+ | DEFAULT | watch_ebpf: Unable to compile regex_prefilter | medium |eBPF event pre-filter regex is invalid: all events pass through unfiltered |
+| .+ | DEFAULT | execve: Not allowed to execve by configuration | high | Shell execution blocked by client config |
 | .+ | ERROR | .+ | medium | |
-
----
 
 ## Deduplication
 
@@ -75,8 +81,6 @@ Both artifacts suppress repeated alerts using `DedupInterval` (default 3600 s).
 Deduplication is keyed on the alert name, which includes the artifact name, so
 at most one alert is produced per artifact per interval. Check the monitoring
 log directly if you suspect there are more errors than the alerts indicate.
-
----
 
 ## Routing to e-mail
 
@@ -98,4 +102,4 @@ for `Server.Monitor.Alerts` configuration details.
 - [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
 
-Tags: #alerts #monitoring #notifications #troubleshooting
+Tags: #alerts #monitoring #notifications #troubleshooting #configuration

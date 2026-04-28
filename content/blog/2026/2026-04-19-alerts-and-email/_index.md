@@ -11,6 +11,8 @@ tags:
   - notifications
   - email
   - detection
+  - monitoring
+  - errors
 ---
 
 <!-- TODO: Expand all sections. Screenshots needed throughout. -->

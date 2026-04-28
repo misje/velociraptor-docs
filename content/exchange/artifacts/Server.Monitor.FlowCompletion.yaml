@@ -52,6 +52,11 @@ description: |
     which may have unlimited column, row and cell lengths, but their total size
     must not exceed `AttachmentsMaxMiB`.
 
+  ## Configuration
+
+  See [How to send e-mails from Velociraptor](/knowledge_base/tips/email_alerts/)
+  for how to create SMTP secrets and how to use this artifact.
+
   ## Example use cases
 
   This artifact may be used in many ways. Some examples are listed below. If you
@@ -148,6 +153,8 @@ description: |
   ### MailTemplate()
 
   Use this helper to create an HTML e-mail body.
+
+  #monitoring #notifications #email
 
 type: SERVER_EVENT
 

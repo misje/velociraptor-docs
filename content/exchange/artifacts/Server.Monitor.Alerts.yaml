@@ -92,6 +92,8 @@ description: |
   notification refers to the monitored artifact rather than the wrapper
   server event artifact.
 
+  #monitoring #alerts #notifications
+
 type: SERVER_EVENT
 
 parameters:

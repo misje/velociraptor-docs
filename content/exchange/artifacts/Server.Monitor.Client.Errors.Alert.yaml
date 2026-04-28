@@ -23,8 +23,8 @@ description: |
 
   If `SeverityField` is set, the alert will also include a severity value taken
   from the matching `IncludeFilter` row's `Severity` column. This can be used
-  by `Server.Monitor.Alerts` to format, filter, and forward the alert as an
-  e-mail notification.
+  by [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+  to format, filter, and forward the alert as an e-mail notification.
 
   Any extra columns added to `IncludeFilter` are passed through to the alert
   under the same name as extra context. For instance, if you want to add a
@@ -50,12 +50,14 @@ description: |
   Note that many errors produced by native VQL functions and plugins are logged
   with the `DEFAULT` level rather than `ERROR`. To alert on these, either add
   your own checks that log `ERROR`, or match the native log messages with
-  `IncludeFilter`. See `Server.Monitor.Errors.Alert` for a comprehensive list
-  of errors logged with level `DEFAULT` that you may want to alert on.
+  `IncludeFilter`. See [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
+  for a comprehensive list of errors logged with level `DEFAULT` that you may want to alert on.
 
   Note that this artifact periodically iterates over **all** clients in order
   to query their monitoring logs. The work is parallelised across clients and
   artifacts, but can still be expensive on large deployments.
+
+  #monitoring #alerts #notifications #errors
 
 type: SERVER_EVENT
 
@@ -129,7 +131,10 @@ sources:
         })
         })
         WHERE IncludeArtifact(artifact=Artifact, filter=IncludeFilter)
-
+      
+      // NOTE: This is output once at the start of the query and is not going
+      // to be up to date with the actual list of monitored artifacts, which
+      // will be queried for every tick in clock() later:
       LET _ <= SELECT
           if(condition=Label,
              then=log(level='DEBUG',

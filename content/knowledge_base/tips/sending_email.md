@@ -13,8 +13,6 @@ function, SMTP secrets, throttling behaviour, local testing with Mailpit, and
 the [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
 artifact that handles MIME encoding.
 
----
-
 ## The `mail()` function
 
 The [`mail()`](/vql_reference/other/mail/) function is the
@@ -26,7 +24,7 @@ SELECT mail(
     secret="my_smtp_secret",
     to="recipient@example.com",
     subject="Hello from Velociraptor",
-    body="A flow has completed."
+    body="Important message"
 )
 FROM scope()
 ```
@@ -38,10 +36,11 @@ strongly recommended.
 
 ### Line length limit
 
-Raw SMTP imposes a hard limit of **998 characters per line** (RFC 2822). If the
-body contains longer lines, some servers will reject or corrupt the message.
-This is easy to hit with log output or structured text. Base64-encoding the
-body and declaring the correct transfer encoding header avoids this:
+Raw SMTP imposes a hard limit of [**998 characters per line** (RFC 2822)](https://www.rfc-editor.org/rfc/rfc2822.html#section-2.1.1).
+If the body contains longer lines, some servers will reject or corrupt the
+message. This is easy to hit with log output or structured text.
+Base64-encoding the body and declaring the correct transfer encoding header
+avoids this:
 
 ```vql
 LET Body = "A long line that might exceed the limit: " + body_text
@@ -86,8 +85,6 @@ For multi-part messages (HTML + plain-text fallback) or attachments, use
 [`Generic.Utils.SendEmail`](/knowledge_base/tips/sending_email/#the-genericutilssendemail-artifact)
 instead.
 
----
-
 ## SMTP secret
 
 The recommended way to supply SMTP credentials is via a
@@ -122,8 +119,6 @@ lets you override `from` (`Sender`).
 Once the secret exists, pass its name to `mail()` or `Generic.Utils.SendEmail`
 via the `secret` parameter.
 
----
-
 ## Throttling
 
 Velociraptor rate-limits outgoing e-mail **globally across the entire server**.
@@ -143,18 +138,16 @@ silently throttled.
 When using `Generic.Utils.SendEmail`, the `Period` parameter maps to this same
 throttling window.
 
----
-
 ## Testing locally with Mailpit
 
 Sending test e-mails against a real SMTP server can have unintended consequences:
 repeated failures or unusual traffic patterns may lower your sender reputation
 (affecting spam scoring) or trigger account lockouts. Use a local SMTP
-testing tool instead.
+testing tool instead, like [Mailpit](https://mailpit.axllent.org/).
 
-[Mailpit](https://mailpit.axllent.org/) accepts SMTP connections and captures
-messages in a web UI without forwarding them. It also shows the raw message,
-which is useful for debugging encoding issues.
+Mailpit accepts SMTP connections and captures messages in a web UI without
+forwarding them. It also shows the raw message, which is useful for debugging
+encoding issues.
 
 Start it with Docker:
 
@@ -171,6 +164,8 @@ docker run -d --name mailpit \
     axllent/mailpit
 ```
 
+The two listening ports are
+
 - **SMTP**: `localhost:1025` (no authentication)
 - **Web UI**: http://localhost:8025
 
@@ -180,9 +175,7 @@ see incoming messages.
 
 ![Mailpit web UI showing a test e-mail from Velociraptor](mailpit.png)
 
----
-
-## The `Generic.Utils.SendEmail` artifact
+## The Generic.Utils.SendEmail artifact
 
 The [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
 artifact builds a properly-encoded MIME message and then calls `mail()` for
@@ -199,7 +192,7 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
     Secret="my_smtp_secret",
     Recipients=("recipient@example.com",),
     Subject="Collection finished",
-    PlainTextMessage="The collection on CLIENT123 has finished."
+    PlainTextMessage="The collection on MyClient has finished."
 )
 FROM scope()
 ```
@@ -211,7 +204,7 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
     Secret="my_smtp_secret",
     Recipients=("recipient@example.com",),
     Subject="Collection finished",
-    HTMLMessage="<h1>Done</h1><p>The collection on <b>CLIENT123</b> has finished.</p>"
+    HTMLMessage="<h1>Done</h1><p>The collection on <b>MyClient</b> has finished.</p>"
 )
 FROM scope()
 ```
@@ -228,8 +221,8 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
     Secret="my_smtp_secret",
     Recipients=("recipient@example.com",),
     Subject="Collection finished",
-    PlainTextMessage="The collection on CLIENT123 has finished.",
-    HTMLMessage="<h1>Done</h1><p>The collection on <b>CLIENT123</b> has finished.</p>"
+    PlainTextMessage="The collection on MyClient has finished.",
+    HTMLMessage="<h1>Done</h1><p>The collection on <b>MyClient</b> has finished.</p>"
 )
 FROM scope()
 ```

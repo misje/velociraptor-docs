@@ -23,9 +23,10 @@ description: |
 
   If `SeverityField` is set, the alert will also include a severity value taken
   from the matching `IncludeFilter` row's `Severity` column. This can be used by
-  `Server.Monitor.Alerts` to format, filter, and forward the alert as an
-  e-mail notification. The severity values can be anything, but
-  `Server.Monitor.Alerts` expects the following unless overridden:
+  [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+  to format, filter, and forward the alert as an e-mail notification. The
+  severity values can be anything, but `Server.Monitor.Alerts` expects the
+  following unless overridden:
 
   - low
   - medium
@@ -138,7 +139,7 @@ description: |
   .+,DEFAULT,add_server_monitoring: artifact .+ not found,medium,Server monitoring artifact not found: monitoring not configured.
   .+,DEFAULT,proc_dump: failed to dump process: .+,medium,Process memory dump failed.
   ```
-  #alert #notification
+  #monitoring #alerts #notifications #errors
 
 type: SERVER_EVENT
 

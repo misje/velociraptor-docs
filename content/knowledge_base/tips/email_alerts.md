@@ -54,6 +54,7 @@ in the e-mail setup guide for how dropped messages are logged.
 `Server.Monitor.FlowCompletion` sends HTML by default (`HTML=true`). The message includes
 client details, flow details, and optionally:
 
+- Select client metadata (`ClientMetadata`)
 - Inline result tables from selected artifact sources (`IncludeResultTableFrom`)
 - JSONL or CSV attachments (`IncludeResultAttachmentFrom`)
 - Direct download links to uploaded files (`IncludeUploadsTableRows`)
@@ -73,11 +74,20 @@ and results from querying disk usage:
 | Windows\.Network\.Netstat | RemoteAddr\|ProcessName\|Pid | 30 | 200 |
 | DiskSpace$ | Filesystem\|Size\|Avail\|Use% | | |
 
-![Results from the DiskSpace artifact, including a jsonl attachment](ds_results.png)
+![Results from the DiskSpace artifact, including a jsonl attachment, in Mailpit](ds_results.png)
 
 `IncludeResultAttachmentFrom` has no row or column limits, but if the total size of all
 attachments exceeds `AttachmentsMaxMiB` (default 100 MiB), all attachments are dropped.
 Keep the source selection specific here as well.
+
+{{% notice info %}}
+
+Including results in the e-mail, either inline or as attachments, should be used
+with care. Only include data limited by targeted regexes, and consider dropping
+attachments altogether. The e-mail includes direct download links to attachments
+in the attachment HTML table.
+
+{{% /notice %}}
 
 ## Example use cases
 

@@ -13,12 +13,12 @@ which forwards them by e-mail.
 
 ## Creating an alert
 
-FIXME: REPLACE:
+Alerts can be called from notebooks, client artifacts, server artifacts, or event artifacts. Call `alert()` the same way as `log()`:
+
 ```vql
 SELECT alert(
-    name=format(format='Honeyfile "%v" accessed', args=FileName),
+    name="The alert title/message",
     FileName=FileName,
-    PID=Pid
     ProcessName=Process.Name,
     Pid=Process.Pid
 )
@@ -41,8 +41,9 @@ shorter interval when testing.
 
 Velociraptor does not use `alert()` internally, and no published artifacts
 currently call it either. There is no rule against publishing artifacts using
-alerts, but by separating the alert logic in separate monitoring artifacts,
-the user has full control over alerting in Velociraptor.
+alerts. However, by separating the alert logic in separate monitoring artifacts,
+the user has full control over alerting in Velociraptor. You decide when to
+create alerts and with what info.
 
 Detection monitoring artifacts are a natural fit, since you probably want to
 be notified immediately if an IoC is detected through client monitoring.
@@ -51,7 +52,7 @@ For operational problems (event query errors, failing artifacts), use the
 dedicated error-monitoring artifacts. See
 [How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/).
 
-### Calling `alert()` from inside an artifact
+### Calling `alert()` from inside a client event artifact
 
 The simplest approach is to call `alert()` directly in the artifact that
 detects the condition. When a client event artifact calls `alert()`, the VQL
@@ -64,8 +65,8 @@ with no extra work on the caller's part.
 
 If you do not want to modify an existing artifact, write a server event
 artifact that watches the source artifact's output with [`watch_monitoring()`](/vql_reference/event/watch_monitoring/)
-and calls `alert()` there. Because the alert then originates from the server
-event artifact, the scope's `client_id` is `"server"` and `artifact` is the
+and calls `alert()`. Because the alert then originates from the server
+event artifact, the scope's `client_id` is "server" and `artifact` is the
 wrapper artifact's name. To make the notification show the original source
 instead, pass `ClientId`, `Artifact`, and `ArtifactType` explicitly in the
 `alert()` call. `Server.Monitor.Alerts` prefers these values from `event_data`
@@ -75,7 +76,7 @@ for the full list of overridable fields.
 
 ### Examples
 
-###### Honeyfile access
+###### Honey file access
 
 A client event artifact monitors decoy files using the exchange artifact
 [`Linux.Detection.Honeyfiles`](/exchange/artifacts/pages/linux.detection.honeyfiles/). A server event artifact is created that listens to events
@@ -284,4 +285,4 @@ alerts. The derived severity appears in the notification subject and body.
 - [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
 
-Tags: #alerts #vql #detection #notifications
+Tags: #monitoring #notifications #alerts #notifications #detection
