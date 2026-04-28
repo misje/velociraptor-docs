@@ -43,11 +43,11 @@ description: |
   | .+ | DEFAULT | fork/exec .+ no such file or directory | high | Executable not found on system |
   | .+ | ERROR | .+ | medium | |
 
-  With this filter we will pick up any attempt of using `execve` with a non-
-  existent binary. This would normally not produce an error, but it would
-  definitely break important functionality in most artifacts. Remember that the
-  filters are matched from top to bottom, i.e. put your most specific filters
-  at the top.
+  With this filter we pick up any attempt to use `execve` with a non-existent
+  binary. This would normally not produce an `ERROR`-level log entry (only a
+  `DEFAULT`-level one), but it would definitely break important functionality
+  in most artifacts. Remember that the filters are matched from top to bottom,
+  so put your most specific filters at the top.
 
   Note that many errors produced by native VQL functions and plugins are logged
   with the `DEFAULT` level rather than `ERROR`. To alert on these, either add
@@ -179,7 +179,7 @@ parameters:
     default: |
       Artifact,Level,Message
       Server\.Monitor\.Alerts$,.+,.+
-      Server\.Monitor\.Errors.Alert$,.+,.+
+      Server\.Monitor\.Errors\.Alert$,.+,.+
 
   - name: SeverityField
     type: str

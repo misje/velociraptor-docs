@@ -1,19 +1,21 @@
 # Using alerts in Velociraptor
 
-The [`alert()`](/vql_reference/other/alert/) function routes a
-message into the `Server.Internal.Alerts` event queue. Use it for high-value,
-low-frequency events: a detection artifact found a match, a honeyfile was
-accessed, a network connection matched an IoC.
+The [`alert()`](/vql_reference/other/alert/) function routes a message
+into the `Server.Internal.Alerts` event queue. Use it for high-value,
+low-frequency events: a detection artifact found a match, a honeyfile
+was accessed, a network connection matched an IoC.
 
-Unlike [`log()`](/vql_reference/popular/log/), which records diagnostic information in the artifact's own log,
-alert messages are collected centrally on the server and can be acted on by a
-server event artifact such as
+Unlike [`log()`](/vql_reference/popular/log/), which records
+diagnostic information in the artifact's own log, alert messages are
+collected centrally on the server and can be acted on by a server
+event artifact such as
 [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/),
 which forwards them by e-mail.
 
 ## Creating an alert
 
-Alerts can be called from notebooks, client artifacts, server artifacts, or event artifacts. Call `alert()` the same way as `log()`:
+Alerts can be created from notebooks, client artifacts, server
+artifacts, or event artifacts. Call `alert()` the same way as `log()`:
 
 ```vql
 SELECT alert(
@@ -25,67 +27,75 @@ SELECT alert(
 FROM ...
 ```
 
-The `name` argument is required. All other keyword arguments are passed through
-as context and appear in the notification. The more relevant context you add,
-the more useful the resulting notification will be.
+The `name` argument is required. All other keyword arguments are
+passed through as context and appear in the notification. The more
+relevant context you add, the more useful the resulting notification
+will be.
 
 ### Deduplication
 
 By default, identical alert names are suppressed for 2 hours
-(`dedup=7200`). Set `dedup=-1` to disable deduplication entirely, or set a
-shorter interval when testing.
+(`dedup=7200`). Set `dedup=-1` to disable deduplication entirely, or
+set a shorter interval when testing.
 
 ---
 
 ## What to use `alert()` for
 
-Velociraptor does not use `alert()` internally, and no published artifacts
-currently call it either. There is no rule against publishing artifacts using
-alerts. However, by separating the alert logic in separate monitoring artifacts,
-the user has full control over alerting in Velociraptor. You decide when to
-create alerts and with what info.
+Only a few built-in artifacts call `alert()` (such as
+`Windows.Events.Mutants` and `Windows.Detection.Registry`), and very
+few published exchange artifacts do. There is no rule against
+publishing artifacts that use alerts, but keeping the alert logic in
+separate monitoring artifacts gives you full control over what
+triggers a notification and what context it includes.
 
-Detection monitoring artifacts are a natural fit, since you probably want to
-be notified immediately if an IoC is detected through client monitoring.
+Detection monitoring artifacts are a natural fit, since you probably
+want to be notified immediately if an IoC is detected through client
+monitoring.
 
-For operational problems (event query errors, failing artifacts), use the
-dedicated error-monitoring artifacts. See
+For operational problems (event query errors, failing artifacts), use
+the dedicated error-monitoring artifacts. See
 [How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/).
 
 ### Calling `alert()` from inside a client event artifact
 
-The simplest approach is to call `alert()` directly in the artifact that
-detects the condition. When a client event artifact calls `alert()`, the VQL
-runtime scope already contains `client_id`, `artifact`, and `artifact_type`.
-`Server.Monitor.Alerts` reads these from the scope and uses them to populate
-the notification with client details and artifact information automatically,
-with no extra work on the caller's part.
+The simplest approach is to call `alert()` directly in the artifact
+that detects the condition. When a client event artifact calls
+`alert()`, the VQL runtime scope already contains `client_id`,
+`artifact`, and `artifact_type`. `Server.Monitor.Alerts` reads these
+from the scope and uses them to populate the notification with client
+details and artifact information automatically, with no extra work on
+the caller's part.
 
 ### Calling `alert()` from a server event artifact
 
-If you do not want to modify an existing artifact, write a server event
-artifact that watches the source artifact's output with [`watch_monitoring()`](/vql_reference/event/watch_monitoring/)
-and calls `alert()`. Because the alert then originates from the server
-event artifact, the scope's `client_id` is "server" and `artifact` is the
-wrapper artifact's name. To make the notification show the original source
-instead, pass `ClientId`, `Artifact`, and `ArtifactType` explicitly in the
-`alert()` call. `Server.Monitor.Alerts` prefers these values from `event_data`
-over its own scope. See the
+If you do not want to modify an existing artifact, write a server
+event artifact that watches the source artifact's output with
+[`watch_monitoring()`](/vql_reference/event/watch_monitoring/) and
+calls `alert()`. Because the alert then originates from the server
+event artifact, the scope's `client_id` is "server" and `artifact` is
+the wrapper artifact's name. To make the notification show the
+original source instead, pass `ClientId`, `Artifact`, and
+`ArtifactType` explicitly in the `alert()` call.
+`Server.Monitor.Alerts` prefers these values from `event_data` over
+its own scope. See the
 [`Server.Monitor.Alerts` description](/exchange/artifacts/pages/server.monitor.alerts/)
 for the full list of overridable fields.
 
 ### Examples
 
-###### Honey file access
+###### Honeyfile access
 
-A client event artifact monitors decoy files using the exchange artifact
-[`Linux.Detection.Honeyfiles`](/exchange/artifacts/pages/linux.detection.honeyfiles/). A server event artifact is created that listens to events
-from this artifact and creates alerts for every file access:
+A client event artifact monitors decoy files using the exchange
+artifact
+[`Linux.Detection.Honeyfiles`](/exchange/artifacts/pages/linux.detection.honeyfiles/).
+A server event artifact listens to events from this artifact and
+creates an alert for every file access:
 
 ```yaml
-name: Server.Monitor.HoneyFileAccess
+name: Server.Monitor.HoneyfileAccess
 description: |
-  Create an alert for every time a honey file is access on a client.
+  Create an alert every time a honeyfile is accessed on a client.
 
   The alert name includes the client's FQDN, so deduplication is performed per
   client.
@@ -97,7 +107,7 @@ sources:
       SELECT
           alert(
             name=format(
-              format='Honey file "%v" accessed in %v',
+              format='Honeyfile "%v" accessed on %v',
               args=(FileName, client_info(client_id=ClientId).os_info.hostname)),
             ClientId=ClientId,
             Artifact="Linux.Detection.Honeyfiles",
@@ -110,17 +120,18 @@ sources:
       FROM watch_monitoring(artifact="Linux.Detection.Honeyfiles")
 ```
 
-As previously mentioned, the client ID and artifact details are overridden so that
-it feels like the alert originates from the client event artifact (and not this server
-event artifact). An alternative would be to modify the original artifact and use `alert()` directly.
+As mentioned above, the client ID and artifact details are overridden
+so that it appears as if the alert originates from the client event
+artifact rather than this server event artifact. An alternative is to
+modify the original artifact and call `alert()` directly.
 
 The resulting e-mail will look something like this:
 
-![An ssh key accessed by Wazuh, triggering an alert](alert.png)
+![An SSH key accessed by Wazuh, triggering an alert](alert.png)
 
-Since the client hostname is included in the alert `name`, alerts will be repeated
-for every client. If you want to deduplicate the alert only on the name of the file
-accessed, remove the client hostname from the alert name.
+Since the client hostname is part of the alert `name`, deduplication
+happens per client. If you want to deduplicate only on the file name,
+remove the client hostname from the alert name.
 
 ###### Sigma or YARA detection hits
 
@@ -155,10 +166,10 @@ Other good candidates:
 
 ## Adding context
 
-Any keyword arguments passed to `alert()` beyond `name` and `dedup` are
-available in `event_data` when the alert is received by `Server.Monitor.Alerts`.
-Pass whatever fields help identify the event. The more context, the more useful
-the notification:
+Any keyword arguments passed to `alert()` beyond `name` and `dedup`
+are available in `event_data` when the alert is received by
+`Server.Monitor.Alerts`. Pass whatever fields help identify the event.
+The more context, the more useful the notification:
 
 ```vql
 SELECT alert(
@@ -195,8 +206,8 @@ becomes:
 
 ### Including all columns from the source query
 
-If you want to include every column from the source query, which may be necessary
-since the columns may differ, you can writing something like
+If you want to include every column from the source query (e.g.
+because the columns may differ), you can write something like
 
 ```vql
 LET Results = SELECT *
@@ -208,18 +219,21 @@ SELECT
 FROM items(item=Results)
 ```
 
-This utilises [argument unpacking](docs/vql/fundamentals/#argument-unpacking). Note
-the order of dict addition: by adding the dict with `name` and `Severity` to the
-query values, and not the other way around, we ensure that these key arguments
-are not overridden.
+This uses
+[argument unpacking](/docs/vql/fundamentals/#argument-unpacking). Note
+the order of the dict addition: by adding the dict with `name` and
+`Severity` to the query values (and not the other way around), we
+ensure that these required arguments are not overridden by columns of
+the same name in the source query.
 
-You should also consider filtering the columns with [`column_filter()`](vql_reference/popular/column_filter/),
-if you want to exclude certain columns or ensure that only relevant columns
-are included:
+You should also consider filtering the columns with
+[`column_filter()`](/vql_reference/popular/column_filter/) if you want
+to exclude certain columns or ensure that only relevant columns are
+included:
 
 ```vql
 LET Results = SELECT *
-  FROM watch_monitoring(artifact="My.Client.Event.Artifact"))
+  FROM watch_monitoring(artifact="My.Client.Event.Artifact")
 
 SELECT
     alert(`**`=to_dict(item=_value) + dict(name="(The alert name)",
@@ -232,19 +246,20 @@ FROM items(item={
 
 ## Receiving alerts by e-mail
 
-Alerts on their own are not useful unless you get notified. There are many ways
-to achieve this. For instance, by calling a web hook or an API to create
-notifications in services like Slack, Mattermost, Teams, Google Chat or other
-message apps. Sending e-mails is another good alternative, and this is the
-method that will be used in this article. Look through the artifact documentation,
-including the exchange artifact reference, for other notification artifacts.
+Alerts on their own are not useful unless you get notified. There are
+many ways to achieve this — for instance, by calling a web hook or an
+API to create notifications in services like Slack, Mattermost, Teams
+or Google Chat. Sending e-mails is another good option, and is the
+method covered here. Look through the artifact documentation,
+including the exchange artifact reference, for other notification
+artifacts.
 
 [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
-watches `Server.Internal.Alerts` and sends an e-mail for each matching alert.
-If your server has internet access, run
+watches `Server.Internal.Alerts` and sends an e-mail for each matching
+alert. If your server has internet access, run
 [`Server.Import.Extras`](/artifact_references/pages/server.import.extras/)
-to import it. Then add it as a server event artifact and point it at your SMTP
-secret.
+to import it. Then add it as a server event artifact and point it at
+your SMTP secret.
 
 Key parameters:
 
@@ -260,10 +275,11 @@ Key parameters:
 ### Severity
 
 `severity` and `level` are not special fields. They are just free-form
-keyword arguments passed to `alert()` like any other context. `Server.Monitor.Alerts`
-gives them meaning through `SeverityTransforms`: it reads named fields from the
-context and maps their values to a normalised severity string. If your alert
-context already includes a field like `level` or `severity` (for instance from
+keyword arguments passed to `alert()` like any other context.
+`Server.Monitor.Alerts` gives them meaning through
+`SeverityTransforms`: it reads named fields from the context and maps
+their values to a normalised severity string. If your alert context
+already includes a field like `level` or `severity` (for instance from
 a Sigma rule), you can map it to a common scale. For example:
 
 ```
@@ -272,8 +288,9 @@ level,(?i)warning,medium
 level,(?i)critical,high
 ```
 
-Set `SeverityThreshold` to `["medium", "high"]` to suppress low-severity
-alerts. The derived severity appears in the notification subject and body.
+Set `SeverityThreshold` to `["medium", "high"]` to suppress
+low-severity alerts. The derived severity appears in the notification
+subject and body.
 
 ## See also
 
@@ -285,4 +302,4 @@ alerts. The derived severity appears in the notification subject and body.
 - [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
 
-Tags: #monitoring #notifications #alerts #notifications #detection
+Tags: #monitoring #notifications #alerts #detection

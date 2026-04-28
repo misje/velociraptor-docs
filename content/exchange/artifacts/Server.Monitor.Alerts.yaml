@@ -40,21 +40,23 @@ description: |
   ## Alert context
 
   When using `alert()`, any free-form arguments passed to the function are
-  available in `event_data`. This is referred to as "context" by this artifact.
-  This context can be used to include any additional information that helps
-  explain the alert. For instance, if you want to create an alert from
-  Sigma.Windows.Hayabusa.Monitoring events, you may want to add fields
-  like Channel, EID, Level, Title, RecordID, Details. If you are creating
-  alerts based on eBPF events, perhaps you want to include filenames, process
-  call chains, ProcInfo etc.
+  available in `event_data`. This is referred to as "context" by this
+  artifact. This context can be used to include any additional information
+  that helps explain the alert. For instance, if you want to create an alert
+  from `Sigma.Windows.Hayabusa.Monitoring` events, you may want to add fields
+  like `Channel`, `EID`, `Level`, `Title`, `RecordID` and `Details`. If you
+  are creating alerts based on eBPF events, you may want to include
+  filenames, process call chains, `ProcInfo` etc.
 
   The more relevant context you add, the more useful the alert and the
   resulting notification will be. Use `ContextInclude` and `ContextExclude`,
-  as well as the row and value limits to adjust how much information to include.
+  as well as the row and value limits, to adjust how much information to
+  include.
 
   Nested dicts and arrays in the context can be flattened for a more readable
   notification with `FlattenContext`. This will transform something like the
-  following, a nested dict value for the `alert()` argument "Details", from
+  following — a nested dict value for the `alert()` argument `Details` —
+  from
 
   | Key | Value |
   | --- | ----- |
@@ -74,22 +76,23 @@ description: |
 
   ## Client and flow details
 
-  Detailed information about the client and the flow (if relevant) are included
-  in separate tables, if enabled. Use `ClientMetadata` to add additional client
-  information. If you are creating alerts from a server monitoring artifact
-  monitoring client event queries (or flow completions / logs), and want to
-  display client and flow information from the original source, the fields
+  Detailed information about the client and the flow (if relevant) is
+  included in separate tables, when enabled. Use `ClientMetadata` to add
+  additional client information. If you are creating alerts from a server
+  monitoring artifact that watches client event queries (or flow completions
+  / logs), and want to display client and flow information from the original
+  source, the fields
 
-  - ClientId
-  - FlowId
-  - Artifact
-  - ArtifactType
+  - `ClientId`
+  - `FlowId`
+  - `Artifact`
+  - `ArtifactType`
 
   can be set in the alert's context to override the information otherwise
-  inferred from the server monitoring artifact. For example, set `ClientId` to
-  the original client's ID so the notification attributes the alert to that
-  client instead of the server, or set `Artifact` / `ArtifactType` so the
-  notification refers to the monitored artifact rather than the wrapper
+  inferred from the server monitoring artifact. For example, set `ClientId`
+  to the original client's ID so the notification attributes the alert to
+  that client instead of the server, or set `Artifact` / `ArtifactType` so
+  the notification refers to the monitored artifact rather than the wrapper
   server event artifact.
 
   #monitoring #alerts #notifications
@@ -213,8 +216,8 @@ parameters:
       Member,Regex,Replace
       level,(?i)warn,medium
       level,(?i)error,high
-      Level,high,High
-      Level,critical,critical
+      Level,,
+      Level,,
       severity,,
       Severity,,
 
