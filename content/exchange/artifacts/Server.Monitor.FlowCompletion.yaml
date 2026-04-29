@@ -153,11 +153,10 @@ description: |
   ## Writing custom notification artifacts
 
   This artifact exports many helper functions that make it easier to create
-  custom e-mail notification artifacts. If you only need HTML output and
-  tables, `MailTemplate()` and `FullTable()` will cover most use cases. If
-  you also want to support plain text, study this artifact's
-  implementation, or look at `Server.Monitor.Alerts` for a slightly simpler
-  example.
+  custom e-mail notification artifacts. If you only need HTML output and tables,
+  `MailTemplate()` and `FullTable()` will cover most use cases. If you also want
+  to support plain text, study this artifact's implementation, or look at
+  `Server.Monitor.Alerts` for a slightly simpler example.
 
   ### FullTable()
 
@@ -1164,10 +1163,10 @@ sources:
       LET IncludeCancelled = NOT 'IgnoreCancelled' IN ErrorHandling OR NOT
           Cancelled
 
-      LET MatchesLabelFilters = (NOT ClientLabelsToAlertOn OR
-            ClientLabels =~ ClientLabelsToAlertOn)
-         AND (NOT ClientLabelsToIgnore OR NOT ClientLabelsToIgnore =~
-                 ClientLabels)
+      LET MatchesLabelFilters = (NOT ClientLabelsToAlertOn OR (NOT
+                    ClientLabels OR ClientLabels =~ ClientLabelsToAlertOn))
+              AND (NOT ClientLabelsToIgnore OR NOT ClientLabels =~
+                      ClientLabelsToIgnore)
 
       LET MatchesArtifactPerms = if(condition=ArtifactPermToAlertOn,
                                     then={
