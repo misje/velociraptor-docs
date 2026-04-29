@@ -15,7 +15,7 @@ Monitoring logs are available in the **Server Events** interface, but
 you are not notified about errors or warnings in these logs out of the
 box.
 
-![Server event logs for a selected artifact](server_event_logs.png)
+![Server event logs for a selected artifact](server_event_logs.svg)
 
 [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
 and

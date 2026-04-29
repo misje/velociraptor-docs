@@ -253,7 +253,7 @@ something to the monitoring log. You would have to study these
 logs (per client in the case of client monitoring) in order to
 notice the errors.
 
-![Server event logs for a selected artifact](/knowledge_base/tips/monitoring_artifact_errors/server_event_logs.png)
+![Server event logs for a selected artifact](/knowledge_base/tips/monitoring_artifact_errors/server_event_logs.svg)
 
 `Server.Monitor.Errors.Alert` (server) and
 `Server.Monitor.Client.Errors.Alert` (clients) periodically inspect
