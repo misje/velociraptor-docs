@@ -44,6 +44,8 @@ notification are:
 | `NotifyHunts` | bool | Include flows that are part of a hunt (off by default) |
 | `DelayThreshold` | int | Only notify if the flow took longer than N seconds to complete (default 10 s) |
 
+TODO: error handling choices
+
 ## Throttling
 
 `SendInterval` controls how many seconds must pass between
