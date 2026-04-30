@@ -433,7 +433,7 @@ export: |
   // Shorten a string from the left to a specified limit and add an ellipsis:
   LET ElideLeft(String, Length=30, Marker='…') = if(
       condition=len(list=String) > Length,
-      then=Marker + String[Length:],
+      then=Marker + NegSlice(String=String, Length=Length),
       else=String)
 
   // Shorten a string in the middle to a specified limit and add an ellipsis:
