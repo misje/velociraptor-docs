@@ -1,9 +1,10 @@
 # Using alerts in Velociraptor
 
 The [`alert()`](/vql_reference/other/alert/) function routes a message
-into the `Server.Internal.Alerts` event queue. Use it for high-value,
-low-frequency events: a detection artifact found a match, a honeyfile
-was accessed, a network connection matched an IoC.
+into the `Server.Internal.Alerts` event queue. It is intended for
+high-value, low-frequency events: a detection artifact found a match,
+a honey file was accessed, a network connection to a known malicious
+host is initiated.
 
 Unlike [`log()`](/vql_reference/popular/log/), which records
 diagnostic information in the artifact's own log, alert messages are
@@ -84,7 +85,7 @@ for the full list of overridable fields.
 
 ### Examples
 
-###### Honeyfile access
+###### Honey file access
 
 A client event artifact monitors decoy files using the exchange
 artifact
@@ -95,10 +96,10 @@ creates an alert for every file access:
 ```yaml
 name: Server.Monitor.HoneyfileAccess
 description: |
-  Create an alert every time a honeyfile is accessed on a client.
+  Create an alert every time a honey file is accessed on a client.
 
-  The alert name includes the client's FQDN, so deduplication is performed per
-  client.
+  The alert name includes the client's FQDN and the file name accessed, so
+  deduplication is performed per client.
 
 type: SERVER_EVENT
 
@@ -107,7 +108,7 @@ sources:
       SELECT
           alert(
             name=format(
-              format='Honeyfile "%v" accessed on %v',
+              format='Honey file "%v" accessed on %v',
               args=(FileName, client_info(client_id=ClientId).os_info.hostname)),
             ClientId=ClientId,
             Artifact="Linux.Detection.Honeyfiles",
@@ -133,6 +134,10 @@ Since the client hostname is part of the alert `name`, deduplication
 happens per client. If you want to deduplicate only on the file name,
 remove the client hostname from the alert name.
 
+The artifact information provided in the screenshot is normally not
+interesting, and is opt-in. It is useful when debugging artifact
+errors.
+
 ###### Sigma or YARA detection hits
 
 A server event artifact watches results from a Sigma or YARA artifact and
@@ -157,7 +162,7 @@ WHERE Level =~ "(?i)high|critical"
 
 Other good candidates:
 
-- Network connections matched against a threat intel feed
+- Network connections to known malicious IP addresses
 - Process execution from temp directories or other unusual paths
 - Writes to registry persistence locations (run keys, services)
 - DNS queries to known bad domains
@@ -166,10 +171,10 @@ Other good candidates:
 
 ## Adding context
 
-Any keyword arguments passed to `alert()` beyond `name` and `dedup`
-are available in `event_data` when the alert is received by
-`Server.Monitor.Alerts`. Pass whatever fields help identify the event.
-The more context, the more useful the notification:
+Any keyword arguments passed to `alert()` beyond `name`, `dedup` and
+`condition` are available in `event_data` when the alert is received
+by `Server.Monitor.Alerts`. Pass whatever fields help identify the
+event. The more context, the more useful the notification:
 
 ```vql
 SELECT alert(
@@ -269,7 +274,7 @@ Key parameters:
 | `Recipients` | Who to notify |
 | `SeverityTransforms` | Derive a normalised severity string from context fields |
 | `SeverityThreshold` | Only notify for alerts at or above a given severity |
-| `ContextInclude` / `ContextExclude` | Control which context fields appear in the notification |
+| `ContextInclude`/`ContextExclude` | Control which context fields appear in the notification |
 | `FlattenContext` | Flatten nested dicts in the context for readability |
 
 ### Severity

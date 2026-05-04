@@ -5,7 +5,7 @@ and when they fail the errors are written to the monitoring log. Event
 queries produce a lot of logs at various severity levels (DEBUG, INFO,
 WARN, ERROR). Some of these entries, especially errors, are worth
 paying attention to, since they indicate that something has failed.
-Server event queries in particular are typically used for important
+*Server* event queries in particular are typically used for important
 monitoring and automation, so you want to be notified when anything
 goes wrong. A VQL syntax error, a missing executable, a failed S3
 upload or unsuccessful JSON parsing — all of these can silently break
@@ -39,8 +39,8 @@ endpoints. You probably do not want the same kind of log monitoring as
 for server event artifacts, but this artifact allows you to do so when
 needed. Perhaps you run important monitoring on some tagged endpoints,
 and it is critical that this monitoring runs without errors. If you
-rely on the process tracker, ETW/EVTX or eBPF monitoring, you want to
-know if it fails.
+rely on the process tracker, ETW/EVTX or eBPF monitoring, you may want
+to know if it fails.
 
 ---
 
@@ -88,6 +88,23 @@ artifact name, so at most one alert is produced per artifact per
 interval. Check the monitoring log directly if you suspect there are
 more errors than the alerts indicate.
 
+## Artifact details
+
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+has an `IncludeArtifactDetails` option (off by default) that appends a
+block of metadata about the offending artifact to the e-mail: name,
+type, author, whether it is built-in or inherited, declared
+permissions, and any artifact metadata. It also scans the recent audit
+log for `SetArtifactFile`, `SetServerMonitoringState`, and
+`SetClientMonitoringState` entries to make a best-effort guess at when
+the artifact and the event table were last modified, and by whom.
+
+This is useful when you are still writing or debugging an artifact and
+want to know which version of it produced the error, or whether
+someone just changed the event table. For routine alerting it is
+typically too noisy and adds little over the artifact name that is
+already in the alert.
+
 ## Routing to e-mail
 
 If your server has internet access, run
@@ -112,4 +129,4 @@ secret. See
 - [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
 
-Tags: #alerts #monitoring #notifications #troubleshooting #configuration
+Tags: #alerts #monitoring #notifications #configuration
