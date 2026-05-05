@@ -50,10 +50,13 @@ description: |
   Note that many errors produced by native VQL functions and plugins are
   logged at the `DEFAULT` level rather than `ERROR`. To alert on these,
   either add your own checks that log `ERROR`, or match the native log
-  messages with `IncludeFilter`. See
-  [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
-  for a comprehensive list of errors logged at level `DEFAULT` that you may
-  want to alert on.
+  messages with `IncludeFilter`. The default `IncludeFilter` is deliberately
+  conservative (just `ERROR.+`) so the artifact does not produce noise out of
+  the box — whether a `DEFAULT`-level log entry is fatal depends on how the
+  function or plugin is used by your artifacts. See
+  [Reference list of known VQL DEFAULT-level errors](/knowledge_base/tips/vql_error_catalogue/)
+  for a ready-to-paste set of regex rows covering uploads, parsers,
+  Sigma/YARA, hunts, eBPF, ETW, and more.
 
   Note that this artifact periodically iterates over **all** clients in
   order to query their monitoring logs. The work is parallelised across

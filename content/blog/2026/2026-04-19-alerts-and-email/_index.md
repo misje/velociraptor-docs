@@ -277,13 +277,16 @@ Artifact,Level,Message,Severity,Explanation
 
 A subtle point worth knowing: many errors from native VQL functions
 and plugins are logged at level `DEFAULT`, not `ERROR`. A naive
-filter that only matches `ERROR` will miss most of them.
-`Server.Monitor.Errors.Alert` ships with a long catalogue of known
-`DEFAULT`-level errors covering uploads (S3, Splunk, Elastic, GCS,
-Azure, SFTP, SMB, WebDAV), parsing (`parse_json`, `parse_csv`,
+filter that only matches `ERROR` will miss most of them. The
+[reference list of known VQL DEFAULT-level errors](/knowledge_base/tips/vql_error_catalogue/)
+collects regex rows for uploads (S3, Splunk, Elastic, GCS, Azure,
+SFTP, SMB, WebDAV), parsing (`parse_json`, `parse_csv`,
 `parse_yaml`, MFT/USN), Sigma/YARA, hunts, eBPF, ETW, and more —
 copy what you need into `IncludeFilter` and adjust severities to
-taste.
+taste. The artifacts ship with a deliberately conservative default
+(just `ERROR.+`) because whether each `DEFAULT`-level entry is
+fatal depends on how the function or plugin is used by the
+artifact producing it.
 
 `Server.Monitor.Client.Errors.Alert` iterates over **all** clients
 to query their per-client monitoring logs. The work is parallelised,

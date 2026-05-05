@@ -61,9 +61,9 @@ the same way and is applied after `IncludeFilter`.
 {{% notice info %}}
 
 Many errors from native VQL functions are logged at level `DEFAULT`, not
-`ERROR`. Include `DEFAULT` in your filters to catch these.
-[`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
-includes a list of known functions that log at `DEFAULT`.
+`ERROR`. Include `DEFAULT` in your filters to catch these. See the
+[reference list of known VQL DEFAULT-level errors](/knowledge_base/tips/vql_error_catalogue/)
+for a ready-to-paste list.
 
 {{% /notice %}}
 
@@ -125,6 +125,7 @@ secret. See
 - Monitor client event artifact errors: [`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/)
 - Monitor server event artifact errors: [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
 - Forward alerts by e-mail: [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+- [Reference list of known VQL DEFAULT-level errors](/knowledge_base/tips/vql_error_catalogue/)
 - [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
 - [Alerts and e-mail notifications in Velociraptor](/blog/2026/2026-04-19-alerts-and-email/)
 
