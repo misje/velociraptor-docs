@@ -4,7 +4,7 @@ description: |
   Send an e-mail when a client flow completes (success or failure), with optional
   HTML formatting, result tables, and file attachments.
 
-  This artifact monitors `System.Flow.Completion` and sends an e-mail when
+  This artifact monitors [`System.Flow.Completion`](/artifact_references/pages/system.flow.completion/) and sends an e-mail when
   certain conditions are met. You may filter by artifact name, client labels,
   hunt participation, hunt labels, flow creation–completion delay, flow
   outcome, artifact permissions, and more. You may also override the normal
@@ -156,7 +156,7 @@ description: |
   custom e-mail notification artifacts. If you only need HTML output and tables,
   `MailTemplate()` and `FullTable()` will cover most use cases. If you also want
   to support plain text, study this artifact's implementation, or look at
-  `Server.Monitor.Alerts` for a slightly simpler example.
+  [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) for a slightly simpler example.
 
   ### FullTable()
 

@@ -1,6 +1,6 @@
 # How to send e-mails from Velociraptor
 
-Velociraptor can send e-mail for a range of purposes: notifying you
+Velociraptor can send e-mails for a range of purposes: notifying you
 when a flow completes, forwarding alerts from detection artifacts, or
 reporting operational problems. See
 [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
@@ -116,29 +116,29 @@ To add an SMTP secret:
 
 In most cases you do not need to set all fields when defining a
 secret. Fields you leave empty may be overridden in the functions
-using the secret. `Generic.Utils.SendEmail` expects most fields to be
+using the secret. [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/) expects most fields to be
 defined in the secret, but lets you override `from` (`Sender`).
 
-Once the secret exists, pass its name to `mail()` or
-`Generic.Utils.SendEmail` via the `secret` parameter.
+Once the secret exists, pass its name to [`mail()`](/vql_reference/other/mail/) or
+[`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/) via the `secret` parameter.
 
 ## Throttling
 
 Velociraptor rate-limits outgoing e-mail **globally across the entire
-server**. If `mail()` is called within `period` seconds of the
+server**. If [`mail()`](/vql_reference/other/mail/) is called within `period` seconds of the
 previous successful send, the message is silently dropped and an
 error is logged. The default `period` is **60 seconds**.
 
 {{% notice info %}}
 
-When an e-mail is dropped, `mail()` logs `ERROR:mail: Send too fast,
+When an e-mail is dropped, [`mail()`](/vql_reference/other/mail/) logs `ERROR:mail: Send too fast,
 suppressing.` (logged at level `DEFAULT`, not `ERROR`) and returns an
 `ErrorStatus` field. Check the artifact logs if you suspect messages
 are being silently throttled.
 
 {{% /notice %}}
 
-When using `Generic.Utils.SendEmail`, the `Period` parameter maps to
+When using [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/), the `Period` parameter maps to
 this same throttling window.
 
 ## Testing locally with Mailpit
@@ -177,19 +177,19 @@ Configure your secret with `server=localhost`, `server_port=1025`, and
 `skip_verify=true`. Open [http://localhost:8025](http://localhost:8025) to
 see incoming messages.
 
-![Mailpit web UI showing a test e-mail from Velociraptor](mailpit.png)
+![Mailpit web UI showing a test e-mail from Velociraptor](mailpit_html.png)
 
 ## The Generic.Utils.SendEmail artifact
 
 The
 [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
 artifact builds a properly-encoded MIME message and then calls
-`mail()` for you. It handles Base64 line-wrapping,
+[`mail()`](/vql_reference/other/mail/) for you. It handles Base64 line-wrapping,
 `multipart/alternative` (HTML + plain-text fallback), and file
 attachments.
 
 Call it from a notebook or another server artifact using
-`Artifact.Generic.Utils.SendEmail(…)`.
+[`Artifact.Generic.Utils.SendEmail(…)`](/artifact_references/pages/generic.utils.sendemail/).
 
 ###### Plain text
 
@@ -230,6 +230,7 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
 )
 ```
 {{% expand "The \"Raw\" tab in Mailpit shows how \"multipart/alternative\" is used to send both HTML and plain-text." %}}
+![The plain-text version of the e-mail in Mailpit](mailpit_text.png)
 ![An e-mail viewed in its raw format in Mailpit](mailpit_raw.png)
 {{% /expand %}}
 
@@ -239,8 +240,8 @@ Pass a list of dicts with `Path` and optionally `Filename` via
 `FilesToUpload`. Each file is Base64-encoded and attached. `Filename`
 overrides the file name used in the attachment.
 
-The files must exist on the **server**. Use `tempdir()` and a write
-function such as `write_csv()` or `write_jsonl()` to create them on
+The files must exist on the **server**. Use [`tempdir()`](/vql_reference/popular/tempdir/) and a write
+function such as [`write_csv()`](/vql_reference/other/write_csv/) or [`write_jsonl()`](/vql_reference/other/write_jsonl/) to create them on
 the fly:
 
 ```vql

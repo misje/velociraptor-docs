@@ -118,7 +118,7 @@ and
 as server event artifacts, pointing all of them at the same SMTP
 secret. See
 [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/) for
-`Server.Monitor.Alerts` configuration details.
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) configuration details.
 
 ## See also
 

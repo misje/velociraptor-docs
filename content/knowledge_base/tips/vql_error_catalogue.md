@@ -21,17 +21,17 @@ A row in this reference list says "the function logged something". It does
 **not** say "the artifact is broken". Whether that log entry is
 actually a fatal error depends on how the function or plugin is used:
 
-- A failing `read_file` is fatal if the artifact's job is to read that
+- A failing [`read_file`](/vql_reference/popular/read_file/) is fatal if the artifact's job is to read that
   file, but expected if the call is a best-effort probe.
-- A failing `parse_json` loses data if it is part of the artifact's
+- A failing [`parse_json`](/vql_reference/parsers/parse_json/) loses data if it is part of the artifact's
   main parsing step, but is harmless on an optional enrichment.
-- An `upload_S3` retry exhaustion should most likely be considered a
+- An [`upload_S3`](/vql_reference/other/upload_s3/) retry exhaustion should most likely be considered a
   serious error. However, it really depends on the data you are
   uploading, and the importance of not losing any information.
-- A `glob` permission denial is normal during a recursive walk; the
+- A [`glob`](/vql_reference/popular/glob/) permission denial is normal during a recursive walk; the
   same message from a single targeted lookup is a real problem.
 
-Severity also varies with the deployment. A `splunk_upload` failure
+Severity also varies with the deployment. A [`splunk_upload`](/vql_reference/other/splunk_upload/) failure
 could be `low` for someone forwarding only debug events, and `high`
 for someone whose entire detection pipeline depends on it.
 

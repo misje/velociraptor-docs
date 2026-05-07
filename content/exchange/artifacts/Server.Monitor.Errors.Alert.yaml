@@ -25,7 +25,7 @@ description: |
   from the matching `IncludeFilter` row's `Severity` column. This can be used by
   [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
   to format, filter, and forward the alert as an e-mail notification. The
-  severity values can be anything, but `Server.Monitor.Alerts` expects the
+  severity values can be anything, but [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) expects the
   following unless overridden:
 
   - low
@@ -43,22 +43,19 @@ description: |
   | .+ | DEFAULT | fork/exec .+ no such file or directory | high | Executable not found on system |
   | .+ | ERROR | .+ | medium | |
 
-  With this filter we pick up any attempt to use `execve` with a non-existent
+  With this filter we pick up any attempt to use [`execve`](/vql_reference/popular/execve/) with a non-existent
   binary. This would normally not produce an `ERROR`-level log entry (only a
   `DEFAULT`-level one), but it would definitely break important functionality
   in most artifacts. Remember that the filters are matched from top to bottom,
   so put your most specific filters at the top.
 
-  Note that many errors produced by native VQL functions and plugins are logged
-  with the `DEFAULT` level rather than `ERROR`. To alert on these, either add
-  your own checks that log `ERROR`, or match the native log messages with
-  `IncludeFilter`. The default `IncludeFilter` is deliberately conservative
-  (just `ERROR.+`) so the artifact does not produce noise out of the box —
-  whether a `DEFAULT`-level log entry is fatal depends on how the function or
-  plugin is used by your artifacts. See
-  [Reference list of known VQL DEFAULT-level errors](/knowledge_base/tips/vql_error_catalogue/)
-  for a ready-to-paste set of regex rows covering uploads, parsers, Sigma/YARA,
-  hunts, eBPF, ETW, and more.
+  Note that many errors produced by native VQL functions and plugins
+  are logged with the `DEFAULT` level rather than `ERROR`. To alert on
+  these, either add your own checks that log `ERROR` to artifacts, or
+  match the native log messages with `IncludeFilter`. See [this
+  reference](/knowledge_base/tips/vql_error_catalogue/) for a list of
+  regexes matching known `DEFAULT`-level errors that is worth
+  monitoring.
 
   #monitoring #alerts #notifications #errors
 
@@ -94,7 +91,7 @@ parameters:
     type: csv
     description: |
       Reject log entries matching one of these rows, applied after
-      `IncludeFilter`. The default excludes `Server.Monitor.Alerts` and this
+      `IncludeFilter`. The default excludes [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) and this
       artifact itself to avoid alerting loops when the notification pipeline
       logs its own errors.
     default: |

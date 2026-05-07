@@ -3,9 +3,9 @@ author: Andreas Misje – @misje
 description: |
   Send an e-mail when an alert is created.
 
-  This artifact watches `Server.Internal.Alerts` and forwards matching alerts by
+  This artifact watches [`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/) and forwards matching alerts by
   e-mail. The notification includes alert metadata such as client, alert time,
-  server time, message, artifact name/type, and any context passed to `alert()`.
+  server time, message, artifact name/type, and any context passed to [`alert()`](/vql_reference/other/alert/).
 
   Output can be sent as either HTML or plain text. Nested alert context can be
   flattened to make complex values easier to read, and per-field and total row
@@ -39,7 +39,7 @@ description: |
 
   ## Alert context
 
-  When using `alert()`, any free-form arguments passed to the function are
+  When using [`alert()`](/vql_reference/other/alert/), any free-form arguments passed to the function are
   available in `event_data`. This is referred to as "context" by this
   artifact. This context can be used to include any additional information
   that helps explain the alert. For instance, if you want to create an alert
@@ -55,7 +55,7 @@ description: |
 
   Nested dicts and arrays in the context can be flattened for a more readable
   notification with `FlattenContext`. This will transform something like the
-  following — a nested dict value for the `alert()` argument `Details` —
+  following — a nested dict value for the [`alert()`](/vql_reference/other/alert/) argument `Details` —
   from
 
   | Key | Value |
@@ -232,7 +232,7 @@ parameters:
   - name: FlattenContext
     type: bool
     description: |
-      Flatten arguments passed to `alert()` so nested structures are easier to
+      Flatten arguments passed to [`alert()`](/vql_reference/other/alert/) so nested structures are easier to
       read, e.g. `{a: {b: 42}, c: [{d: foo, e: bar}]}` becomes
       `{a.b: 42, c.0.d: foo, c.0.e: bar}`. See the main description for a
       worked example.

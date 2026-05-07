@@ -1,10 +1,11 @@
 # Using alerts in Velociraptor
 
 The [`alert()`](/vql_reference/other/alert/) function routes a message
-into the `Server.Internal.Alerts` event queue. It is intended for
-high-value, low-frequency events: a detection artifact found a match,
-a honey file was accessed, a network connection to a known malicious
-host is initiated.
+into the
+[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts)
+event queue. It is intended for high-value, low-frequency events: a
+detection artifact found a match, a honey file was accessed, a network
+connection to a known malicious host is initiated.
 
 Unlike [`log()`](/vql_reference/popular/log/), which records
 diagnostic information in the artifact's own log, alert messages are
@@ -15,8 +16,10 @@ which forwards them by e-mail.
 
 ## Creating an alert
 
-Alerts can be created from notebooks, client artifacts, server
-artifacts, or event artifacts. Call `alert()` the same way as `log()`:
+Alerts can be created from anywhere where VQL can be executed:
+notebooks, client artifacts, server artifacts, or event artifacts.
+Call [`alert()`](/vql_reference/other/alert/) the same way as
+[`log()`](/vql_reference/popular/log/):
 
 ```vql
 SELECT alert(
@@ -28,10 +31,10 @@ SELECT alert(
 FROM ...
 ```
 
-The `name` argument is required. All other keyword arguments are
-passed through as context and appear in the notification. The more
-relevant context you add, the more useful the resulting notification
-will be.
+The `name` argument is required. All other keyword arguments (except
+for `dedup`and `condition`) are passed through as context and appear
+in the notification. The more relevant context you add, the more
+useful the resulting notification will be.
 
 ### Deduplication
 
@@ -43,8 +46,8 @@ set a shorter interval when testing.
 
 ## What to use `alert()` for
 
-Only a few built-in artifacts call `alert()` (such as
-`Windows.Events.Mutants` and `Windows.Detection.Registry`), and very
+Only a few built-in artifacts call [`alert()`](/vql_reference/other/alert/) (such as
+[`Windows.Events.Mutants`](/artifact_references/pages/windows.events.mutants/) and [`Windows.Detection.Registry`](/artifact_references/pages/windows.detection.registry/)), and very
 few published exchange artifacts do. There is no rule against
 publishing artifacts that use alerts, but keeping the alert logic in
 separate monitoring artifacts gives you full control over what
@@ -60,10 +63,10 @@ the dedicated error-monitoring artifacts. See
 
 ### Calling `alert()` from inside a client event artifact
 
-The simplest approach is to call `alert()` directly in the artifact
+The simplest approach is to call [`alert()`](/vql_reference/other/alert/) directly in the artifact
 that detects the condition. When a client event artifact calls
-`alert()`, the VQL runtime scope already contains `client_id`,
-`artifact`, and `artifact_type`. `Server.Monitor.Alerts` reads these
+[`alert()`](/vql_reference/other/alert/), the VQL runtime scope already contains `client_id`,
+`artifact`, and `artifact_type`. [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) reads these
 from the scope and uses them to populate the notification with client
 details and artifact information automatically, with no extra work on
 the caller's part.
@@ -73,12 +76,12 @@ the caller's part.
 If you do not want to modify an existing artifact, write a server
 event artifact that watches the source artifact's output with
 [`watch_monitoring()`](/vql_reference/event/watch_monitoring/) and
-calls `alert()`. Because the alert then originates from the server
+calls [`alert()`](/vql_reference/other/alert/). Because the alert then originates from the server
 event artifact, the scope's `client_id` is "server" and `artifact` is
 the wrapper artifact's name. To make the notification show the
 original source instead, pass `ClientId`, `Artifact`, and
-`ArtifactType` explicitly in the `alert()` call.
-`Server.Monitor.Alerts` prefers these values from `event_data` over
+`ArtifactType` explicitly in the [`alert()`](/vql_reference/other/alert/) call.
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) prefers these values from `event_data` over
 its own scope. See the
 [`Server.Monitor.Alerts` description](/exchange/artifacts/pages/server.monitor.alerts/)
 for the full list of overridable fields.
@@ -124,7 +127,7 @@ sources:
 As mentioned above, the client ID and artifact details are overridden
 so that it appears as if the alert originates from the client event
 artifact rather than this server event artifact. An alternative is to
-modify the original artifact and call `alert()` directly.
+modify the original artifact and call [`alert()`](/vql_reference/other/alert/) directly.
 
 The resulting e-mail will look something like this:
 
@@ -171,9 +174,9 @@ Other good candidates:
 
 ## Adding context
 
-Any keyword arguments passed to `alert()` beyond `name`, `dedup` and
+Any keyword arguments passed to [`alert()`](/vql_reference/other/alert/) beyond `name`, `dedup` and
 `condition` are available in `event_data` when the alert is received
-by `Server.Monitor.Alerts`. Pass whatever fields help identify the
+by [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/). Pass whatever fields help identify the
 event. The more context, the more useful the notification:
 
 ```vql
@@ -189,7 +192,7 @@ SELECT alert(
 FROM ...
 ```
 
-If a context field contains a nested dict or array, `Server.Monitor.Alerts`
+If a context field contains a nested dict or array, [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
 flattens it with `FlattenContext` (on by default). A single `Details` argument
 containing a complex nested value:
 
@@ -260,7 +263,7 @@ including the exchange artifact reference, for other notification
 artifacts.
 
 [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
-watches `Server.Internal.Alerts` and sends an e-mail for each matching
+watches [`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/) and sends an e-mail for each matching
 alert. If your server has internet access, run
 [`Server.Import.Extras`](/artifact_references/pages/server.import.extras/)
 to import it. Then add it as a server event artifact and point it at
@@ -280,8 +283,8 @@ Key parameters:
 ### Severity
 
 `severity` and `level` are not special fields. They are just free-form
-keyword arguments passed to `alert()` like any other context.
-`Server.Monitor.Alerts` gives them meaning through
+keyword arguments passed to [`alert()`](/vql_reference/other/alert/) like any other context.
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) gives them meaning through
 `SeverityTransforms`: it reads named fields from the context and maps
 their values to a normalised severity string. If your alert context
 already includes a field like `level` or `severity` (for instance from

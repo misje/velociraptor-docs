@@ -32,7 +32,7 @@ notify you when any of this happens:
 - [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/):
   sends an e-mail when a client flow completes (or fails)
 - [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/):
-  forwards alerts created by `alert()` calls anywhere in the
+  forwards alerts created by [`alert()`](/vql_reference/other/alert/) calls anywhere in the
   deployment
 - [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/)
   and
@@ -40,13 +40,13 @@ notify you when any of this happens:
   turn entries in the monitoring log into alerts so failures stop
   being silent
 
-Each artifact has a dedicated knowledge-base guide with the full
-parameter reference and recipes.
+A series of knowledge base articles will go into detail on how to use
+these artifacts.
 
 ## Overview
 
 There are many ways to send a notification (Slack, Teams, PagerDuty
-etc.), but this series sticks to e-mail because:
+etc.), but this post sticks to e-mail because:
 
 - it requires little setup and works almost everywhere
 - it can carry a lot of information per message
@@ -56,10 +56,11 @@ Two of the artifacts introduced here send e-mail directly:
 - [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
 - [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
 
-The remaining artifacts, and most of the examples, produce alerts.
-If you want alerting but not e-mail notifications, the error
-monitoring and the use of `alert()` for detection are still
-relevant — only the final hop changes.
+The remaining artifacts, and most of the examples, produce alerts. If
+you want alerting but not e-mail notifications, the error monitoring
+and the use of [`alert()`](/vql_reference/other/alert/) for detection are still relevant. You need
+only need to use or write/adjust a monitoring artifact to produce
+notifications, for example Slack or Teams, for alerts produced.
 
 ![Simple overview of how a detection creates an e-mail](monitoring_diagram.svg)
 
@@ -82,28 +83,28 @@ two pieces of shared infrastructure:
 If you have not configured SMTP yet, start with
 [How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/).
 It also covers testing locally with
-[Mailpit](https://mailpit.axllent.org/), which lets you send as
-many e-mails as you want without getting blocked by any real SMTP
-server, and explains the
+[Mailpit](/knowledge_base/tips/sending_email/#testing-locally-with-mailpit),
+which lets you send as many e-mails as you want without getting
+blocked by any real SMTP server, and explains the
 [global e-mail throttling](/knowledge_base/tips/sending_email/#throttling)
 worth knowing about before going to production.
 
 ## Flow-completion notifications
 
-`Server.Monitor.FlowCompletion` watches `System.Flow.Completion` and
-sends an e-mail when a client flow finishes. The default e-mail
-includes client details, flow metadata (creator, timestamps,
-duration, requested artifacts, arguments), and a result summary.
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) watches
+[`System.Flow.Completion`](/artifact_references/pages/system.flow.completion)
+and sends an e-mail when a client flow finishes. The default e-mail
+includes client details, flow metadata (creator, timestamps, duration,
+requested artifacts, arguments), and a result summary.
 
 ![Flow-completion e-mail: client section](/knowledge_base/tips/email_alerts/ff_client.png)
 
 ![Flow-completion e-mail: flow section](/knowledge_base/tips/email_alerts/ff_flow.png)
 
-It is deliberately filter-heavy. Out of the box you would be flooded
-with notifications, so the artifact ships with sensible defaults
-(ignore `Generic.Client.Info`, ignore hunts, only notify on flows
-that took longer than 10 seconds) and a long list of knobs to tune
-the rest:
+The artifact comes with a great number of parameters, most filters
+that let you configure in detail when and for what to be notified. You
+should read through the description and uses cases and pick suitable
+arguments. Some of the parameters are:
 
 - `ArtifactsToAlertOn`/`ArtifactsToIgnore`: regex match on the
   collected artifacts
@@ -117,8 +118,9 @@ the rest:
   individual filters (`IncludeHunts`, `IgnoreArtifactFilters`,
   `IgnoreDelay`)
 - `NotifyIfResultsLabels`/`NotifyIfUploadsLabels`: special
-  override. If a client carries this label, any flow that produces
-  results (or uploads) notifies regardless of other filters
+  override: If a client carries this label, or a hunt is tagged with
+  this value, any flow that produces results (or uploads) notifies
+  regardless of other filters
 
 Recipients can come from a fixed list (`Recipients`), be derived
 from the user who scheduled the flow (`NotifyExecutor`, optionally
@@ -128,28 +130,34 @@ at once.
 
 ###### A few examples
 
-- **Notify the analyst who ran a collection**: Set `NotifyExecutor`
-  to true. If usernames are e-mail addresses, that is all you need;
-  otherwise add `NotifyExecutorDomains` to map them. Since getting
-  a notification for a flow that finishes immediately is not very
-  useful, set `DelayThreshold` to a few seconds or minutes.
-- **Audit shell access**: Set `ArtifactPermToAlertOn` to `EXECVE`
-  and `DelayThreshold` to `0`. Every completed flow that involved a
-  shell artifact lands in the auditor's mailbox.
+- **Notify the analyst who ran a collection**: Set `NotifyExecutor` to
+  true. If usernames are e-mail addresses, that is all you need;
+  otherwise add `NotifyExecutorDomains` to map them. Since getting a
+  notification for a flow that finishes immediately is not very
+  useful, set `DelayThreshold` to a few seconds or minutes. The idea
+  is to get notified when a collection finishes some time in the
+  future, so that its results are not forgot.
+- **Audit shell access**: Set `ArtifactPermToAlertOn` to `EXECVE` and
+  `DelayThreshold` to `0`. Every completed flow that involved a shell
+  artifact (or any artifact that allows for arbitrary code execution
+  through artifact arguments) notifies an auditor.
 - **Notify the device owner**: Store the owner's address in a
   client metadata field and point `NotifyMetadataEMail` at that
   field. Useful in environments with strict privacy rules.
-- **Catch only failures in a hunt**: Leave `NotifyHunts` off, but
+- **Catch failures in a hunt**: Leave `NotifyHunts` off, but
   add `IncludeHunts` to `ErrorHandling`. Be sure to test-run your
   hunts first, before enabling this.
 
 ###### Including results in the e-mail
 
+Apart from just notifying you that a collection has completed,
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
+can also include (parts) of the results in the e-mail.
+
 `IncludeResultTableFrom` renders selected sources as inline HTML
 tables. `IncludeResultAttachmentFrom` exports them as JSONL or CSV
-attachments. Both accept a CSV of `Source`, `Columns`, `MaxRows`
-(and `CellLimit`), so you can keep the output narrow and predictable
-even when an artifact returns dozens of columns.
+attachments. Both accept a CSV argument of `Source`, `Columns`, `MaxRows`
+(and `CellLimit`) to help you restrict the amount of data to include.
 
 ![DiskSpace results inline plus a JSONL attachment, viewed in Mailpit](/knowledge_base/tips/email_alerts/ds_results.png)
 
@@ -161,17 +169,18 @@ for more information.
 
 Flow-completion notifications fire on every flow that passes the
 filters, regardless of what the flow actually found. Alerts are
-different: the artifact author chooses when to surface something
-worth attention, such as when a honeyfile is accessed, a YARA rule
-matches, or a network connection hits an IoC list. The
-[`alert()`](/vql_reference/other/alert/) function is how that
-signal is sent. Each call pushes a record onto
-`Server.Internal.Alerts`, a deployment-wide queue that any server
-event artifact can subscribe to.
+different: the artifact author chooses when to surface something worth
+attention, such as when a honey file is accessed, a YARA rule matches,
+or when an IoC is detected in the system log. The
+[`alert()`](/vql_reference/other/alert/) function is how that signal
+is sent. Alerts are created very much like log entries, but as opposed
+to logs, alerts are sent to the queue
+[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts),
+which server event artifacts can subscribe to.
 
 ```vql
 SELECT alert(
-    name="Honeyfile accessed",
+    name="Honey file accessed",
     dedup=300,
     Path=FileName,
     `Process name`=ProcessName,
@@ -181,26 +190,27 @@ SELECT alert(
 FROM ...
 ```
 
-The `name` argument is required. Everything else is free-form
-context that travels with the alert. Identical names are
-deduplicated for two hours by default; pass `dedup=-1` to disable
-the suppression while testing.
+The `name` argument is required. Everything else are free-form
+arguments acting as context, available as individual columns in the
+internal [`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/) artifact. Identical `name`s are
+deduplicated for two hours by default; pass `dedup=-1` to disable the
+suppression while testing.
 
-Although `alert()` can be used in VQL anywhere, it makes the most
+Although [`alert()`](/vql_reference/other/alert/) can be used in VQL anywhere, it makes the most
 sense to use it in event artifacts. Collections and hunts finish or
 expire, after which you would normally inspect the results. Event
 queries never stop, making alerts a good way to notify when
 something noteworthy happens.
 
-`Server.Monitor.Alerts` is the consumer. It watches the
-`Server.Internal.Alerts` queue, formats each alert as an HTML or
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) is the consumer. It watches the
+[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/) queue, formats each alert as an HTML or
 plain-text e-mail, and sends it through the same
-`Generic.Utils.SendEmail` utility as `Server.Monitor.FlowCompletion`.
+[`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/) utility as [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/).
 
 ![An alert e-mail triggered by Wazuh's file integrity monitoring accessing a decoy SSH key](/knowledge_base/tips/vql_alerts/alert.png)
 
 As seen in the screenshot above, the resulting e-mail contains a
-lot of details. Every free-form argument passed to `alert()` is
+lot of details. Every free-form argument passed to [`alert()`](/vql_reference/other/alert/) is
 included as alert context and flattened by default. This makes
 nested JSON data a lot more readable. The client and flow
 information may be optionally disabled.
@@ -243,22 +253,21 @@ for details.
 
 ## Catching silent failures
 
-Event queries fail. Perhaps not during testing, but after months
-of successfully calling an API or parsing events from an endpoint.
-A `parse_json()` call quietly fails, returning nothing. An
-`upload_S3()` call exhausts its retries. A `watch_ebpf()` regex
-fails to compile. `execve()` is denied by client config. None of
-these stops the event query from running; they all just write
-something to the monitoring log. You would have to study these
-logs (per client in the case of client monitoring) in order to
-notice the errors.
+Event queries fail. Perhaps not during testing, but after months of
+successfully calling an API or parsing events from an endpoint. A
+[`parse_json()`](/vql_reference/parsers/parse_json/) call quietly fails, returning nothing. An [`upload_S3()`](/vql_reference/other/upload_s3/)
+call exhausts its retries. [`execve()`](/vql_reference/popular/execve/) fails to find the executable.
+None of these stops the event query from running; they all just write
+something to the monitoring log. You would have to study these logs
+(per client in the case of client monitoring) in order to notice the
+errors.
 
 ![Server event logs for a selected artifact](/knowledge_base/tips/monitoring_artifact_errors/server_event_logs.svg)
 
-`Server.Monitor.Errors.Alert` (server) and
-`Server.Monitor.Client.Errors.Alert` (clients) periodically inspect
-those logs and call `alert()` for entries that match their filters.
-Combined with `Server.Monitor.Alerts`, you can get an e-mail notification every
+[`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/) (server) and
+[`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/) (clients) inspect
+those logs and call [`alert()`](/vql_reference/other/alert/) for entries that match their filters.
+Combined with [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/), you can get an e-mail notification every
 time a monitoring artifact starts failing.
 
 The filter model is shared by both: `IncludeFilter` and
@@ -276,19 +285,13 @@ Artifact,Level,Message,Severity,Explanation
 ```
 
 A subtle point worth knowing: many errors from native VQL functions
-and plugins are logged at level `DEFAULT`, not `ERROR`. A naive
-filter that only matches `ERROR` will miss most of them. The
-[reference list of known VQL DEFAULT-level errors](/knowledge_base/tips/vql_error_catalogue/)
-collects regex rows for uploads (S3, Splunk, Elastic, GCS, Azure,
-SFTP, SMB, WebDAV), parsing (`parse_json`, `parse_csv`,
-`parse_yaml`, MFT/USN), Sigma/YARA, hunts, eBPF, ETW, and more —
-copy what you need into `IncludeFilter` and adjust severities to
-taste. The artifacts ship with a deliberately conservative default
-(just `ERROR.+`) because whether each `DEFAULT`-level entry is
-fatal depends on how the function or plugin is used by the
-artifact producing it.
+and plugins are logged at level `DEFAULT`, not `ERROR`. A naive filter
+that only matches `ERROR` will miss most of them. [This
+reference](/knowledge_base/tips/vql_error_catalogue/) contains a CSV
+list that you can use as an argument to `IncludeFilter` to detect many
+of these errors.
 
-`Server.Monitor.Client.Errors.Alert` iterates over **all** clients
+[`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/) iterates over **all** clients
 to query their per-client monitoring logs. The work is parallelised,
 but it is still more expensive than the server-side variant —
 narrow `IncludeFilter` to the artifacts you actually care about
@@ -304,17 +307,17 @@ If you want to try out all of the discussed monitoring:
 
 1. Create an SMTP secret of type **SMTP Creds** and grant access to
    `VelociraptorServer (Server Event Runner)`.
-2. Add `Server.Monitor.FlowCompletion` as a server event artifact.
+2. Add [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) as a server event artifact.
    Start with `NotifyExecutor=true` and a sensible `DelayThreshold`,
    then refine `ArtifactsToAlertOn`/`ArtifactsToIgnore` and the
    label filters as you go.
-3. Add `Server.Monitor.Alerts` so anything that calls `alert()`
+3. Add [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) so anything that calls [`alert()`](/vql_reference/other/alert/)
    (detection artifacts, error monitors, your own custom watchers)
    produces an e-mail. Configure `SeverityTransforms` and
    `SeverityThreshold` as needed.
-4. Add `Server.Monitor.Errors.Alert` to surface failures in your
+4. Add [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/) to surface failures in your
    server event queries.
-5. Optionally add `Server.Monitor.Client.Errors.Alert`, scoped to the
+5. Optionally add [`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/), scoped to the
    handful of client event artifacts you feel the need to monitor
    closely for errors.
 6. Set `SendInterval` to `-1` once the configuration is settled. The
@@ -325,10 +328,10 @@ If you want to try out all of the discussed monitoring:
 ## Further reading
 
 - [How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/):
-  SMTP secrets, `mail()`, `Generic.Utils.SendEmail`, Mailpit
+  SMTP secrets, [`mail()`](/vql_reference/other/mail/), [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/), Mailpit
 - [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/):
-  `Server.Monitor.FlowCompletion` in depth
+  [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) in depth
 - [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/):
-  `alert()`, severity, deduplication, custom watchers
+  [`alert()`](/vql_reference/other/alert/), severity, deduplication, custom watchers
 - [How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/):
-  `Server.Monitor.Errors.Alert` and the client variant
+  [`Server.Monitor.Errors.Alert`](/exchange/artifacts/pages/server.monitor.errors.alert/) and the client variant

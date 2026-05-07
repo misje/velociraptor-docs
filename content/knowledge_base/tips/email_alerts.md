@@ -5,7 +5,7 @@
 [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
 sends an e-mail when a client flow completes, with support for HTML
 formatting, inline result tables, and file attachments. It monitors
-`System.Flow.Completion` and applies a configurable set of filters
+[`System.Flow.Completion`](/artifact_references/pages/system.flow.completion/) and applies a configurable set of filters
 before deciding whether to send a notification.
 
 An SMTP secret is required. See
@@ -20,19 +20,19 @@ An SMTP secret is required. See
 If your server has internet access, run
 [`Server.Import.Extras`](/artifact_references/pages/server.import.extras/)
 to import all exchange artifacts, including
-`Server.Monitor.FlowCompletion`. Otherwise, copy the artifact
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/). Otherwise, copy the artifact
 definition manually from the
 [Artifact Exchange](/exchange/artifacts/pages/server.monitor.flowcompletion/).
 
-Add `Server.Monitor.FlowCompletion` as a server event artifact. Set
+Add [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) as a server event artifact. Set
 `Secret` to the name of your SMTP secret. Configure at least one
 recipient in `Recipients`, or enable `NotifyExecutor` to notify
 whoever scheduled the flow.
 
 ## Filtering
 
-By default, `Server.Monitor.FlowCompletion` notifies on every flow
-except those collecting only `Generic.Client.Info` (or its `Custom.`
+By default, [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) notifies on every flow
+except those collecting only [`Generic.Client.Info`](/artifact_references/pages/generic.client.info/) (or its `Custom.`
 override). The main parameters for controlling what triggers a
 notification are:
 
@@ -44,7 +44,14 @@ notification are:
 | `NotifyHunts` | bool | Include flows that are part of a hunt (off by default) |
 | `DelayThreshold` | int | Only notify if the flow took longer than N seconds to complete (default 10 s) |
 
-TODO: error handling choices
+The parameter `Errorhandling` lets failed flows bypass filters:
+
+| Choice | Description |
+| ------ | ----------- |
+| IncludeHunts | Create notifications for failed flows part of hunts (may be noisy!) |
+| IgnoreCancelled | Do not consider a cancelled flow a failure (enabled by default) |
+| IgnoreArtifactFilters | Ignore `IncludeArtifact` and `ExcludeArtifact` for failed flows |
+| IgnoreDelay | Ignore `DelayThreshold` for failed flows |
 
 ## Throttling
 
@@ -57,7 +64,7 @@ in the e-mail setup guide for how dropped messages are logged.
 
 ## E-mail content
 
-`Server.Monitor.FlowCompletion` sends HTML by default (`HTML=true`).
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) sends HTML by default (`HTML=true`).
 The message includes client details, flow details, and optionally:
 
 - Selected client metadata (`ClientMetadata`)
@@ -65,6 +72,10 @@ The message includes client details, flow details, and optionally:
   (`IncludeResultTableFrom`)
 - JSONL or CSV attachments (`IncludeResultAttachmentFrom`)
 - Direct download links to uploaded files (`IncludeUploadsTableRows`)
+
+When HTML is enabled, a plain-text alternative is also provided (using
+"multipart/alterntive"). E-mail clients that do not support HTML can
+still view the e-mails.
 
 For `IncludeResultTableFrom`, rows, columns, and cell values are
 automatically truncated when they exceed the hard limits: 100 rows, 4
@@ -101,10 +112,10 @@ already includes direct download links in the uploads HTML table.
 
 ## Example use cases
 
-`Server.Monitor.FlowCompletion` may be used in many ways. Some
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) may be used in many ways. Some
 examples follow. If you need to run several of these in parallel, you
 may have to create your own artifacts that call
-`Server.Monitor.FlowCompletion` individually with different arguments.
+[`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) individually with different arguments.
 
 ### Notify the analyst who ran the collection
 
@@ -114,18 +125,20 @@ with no fixed `Recipients` list needed. If usernames are not e-mail
 addresses, use `NotifyExecutorDomains` to map them: a row
 `.+,example.org` appends `@example.org` to any username.
 
-This works well as a general setting so analysts naturally receive
-results from their own collections without needing to poll the GUI.
-
 ### Notify when an offline client finally checks in
 
 You have scheduled a collection on an offline client. Set
-`DelayThreshold` to something larger than the expected round-trip
+`DelayThreshold` to something larger than the expected completion time
 time (e.g. 300 for five minutes) so you are only notified when the
 client had to wait. Use `NotifyExecutor` to send the result to the
 analyst who scheduled it, and set `IncludeResultAttachmentFrom` to
 attach the results directly to the e-mail so the analyst does not
 need to open the GUI at all.
+
+When collecting artifacts from individual clients (i.e. not through
+hunts), it may be easy to forget about the collection. — Especially if
+the client is not online when the flow was scheduled. Getting an
+e-mail notification when the flow fails or completes is very useful.
 
 ### Get notified when hunt flows fail
 
@@ -138,7 +151,14 @@ regardless of the `NotifyHunts` setting.
 Combine with `IgnoreArtifactFilters` in `ErrorHandling` if you also
 want failure notifications regardless of `ArtifactsToIgnore`.
 
+This may create a lot of notifications if the hunt is buggy. Test the
+artifact collection on a smaller part of the fleet before enabling.
+
 ### Audit shell and EXECVE artifact use
+
+Artifacts with `EXECVE` permissions allow the collector to run
+arbitrary commands on endpoints. Such artifacts are dangerous, and you
+may want to monitor when they are used.
 
 Set `ArtifactPermToAlertOn` to `EXECVE` and `DelayThreshold` to `0`
 to get a notification for every completed flow that includes an
@@ -168,7 +188,7 @@ collection should always trigger a notification.
 ### New client enrolled
 
 Set `NewClientArtifacts` to a regex matching the artifacts you
-collect on enrolment (e.g. `Generic.Client.Info`). When a client that
+collect on enrolment (e.g. [`Generic.Client.Info`](/artifact_references/pages/generic.client.info/)). When a client that
 is newer than `NewClientThreshold` seconds completes such a flow, a
 notification is sent regardless of other filters. Useful for getting
 an e-mail whenever a new endpoint appears on the server.
