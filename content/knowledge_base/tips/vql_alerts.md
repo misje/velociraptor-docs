@@ -2,7 +2,7 @@
 
 The [`alert()`](/vql_reference/other/alert/) function routes a message
 into the
-[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts)
+[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/)
 event queue. It is intended for high-value, low-frequency events: a
 detection artifact found a match, a honey file was accessed, a network
 connection to a known malicious host is initiated.
@@ -32,7 +32,7 @@ FROM ...
 ```
 
 The `name` argument is required. All other keyword arguments (except
-for `dedup`and `condition`) are passed through as context and appear
+for `dedup` and `condition`) are passed through as context and appear
 in the notification. The more relevant context you add, the more
 useful the resulting notification will be.
 

@@ -85,7 +85,7 @@ FROM scope()
 
 For multi-part messages (HTML + plain-text fallback) or attachments,
 use
-[`Generic.Utils.SendEmail`](/knowledge_base/tips/sending_email/#the-genericutilssendemail-artifact)
+[`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
 instead.
 
 ## SMTP secret
@@ -171,7 +171,7 @@ docker run -d --name mailpit \
 The two listening ports are
 
 - **SMTP**: `localhost:1025` (no authentication)
-- **Web UI**: http://localhost:8025
+- **Web UI**: [http://localhost:8025](http://localhost:8025)
 
 Configure your secret with `server=localhost`, `server_port=1025`, and
 `skip_verify=true`. Open [http://localhost:8025](http://localhost:8025) to

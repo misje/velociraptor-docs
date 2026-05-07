@@ -25,14 +25,14 @@ periodically inspect those logs and call
 can then be forwarded by e-mail via
 [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/).
 
-## Server.Monitor.Errors.Alert
+## Server.Monitor.Errors.Alert (server-side errors)
 
 If you have any custom server event artifacts, you have likely
 configured some automation, like fetching data from APIs or uploading
 data to S3/Elastic. You probably want to be notified if any of this
 automation fails.
 
-## Server.Monitor.Client.Errors.Alert
+## Server.Monitor.Client.Errors.Alert (client-side errors)
 
 Unlike server event artifacts, client event artifacts run on many
 endpoints. You probably do not want the same kind of log monitoring as
@@ -102,7 +102,7 @@ the artifact and the event table were last modified, and by whom.
 This is useful when you are still writing or debugging an artifact and
 want to know which version of it produced the error, or whether
 someone just changed the event table. For routine alerting it is
-typically too noisy and adds little over the artifact name that is
+typically too noisy and adds little beyond the artifact name, which is
 already in the alert.
 
 ## Routing to e-mail

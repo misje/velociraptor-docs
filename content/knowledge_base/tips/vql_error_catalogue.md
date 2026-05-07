@@ -1,9 +1,9 @@
 # Reference list of known VQL DEFAULT-level errors
 
 Many native VQL functions and plugins log errors at level `DEFAULT`
-rather than `ERROR`. While some of these should perhaps be `WARN` or
-`ERROR`, in many cases, it is up to the caller to decide whether
-the VQL calling the function/plugin has failed.
+rather than `ERROR`. Some of these should arguably be `WARN` or
+`ERROR`, but in many cases it is up to the caller to decide whether
+the VQL has failed.
 
 When monitoring errors from event artifacts, you should consider
 including some of these `DEFAULT`-level log messages in your alerting
@@ -67,7 +67,7 @@ Artifact,Level,Message,Severity,Explanation
 .+,DEFAULT,ERROR:parse_json: .+,medium,parse_json failed to parse a value: result is silently dropped.
 .+,DEFAULT,ERROR:parse_yaml: .+,medium,parse_yaml failed to parse a value: result is silently dropped.
 .+,DEFAULT,ERROR:process_tracker: .+,medium,Process tracker hit a fatal error: process ancestry data may be incomplete.
-.+,DEFAULT,ERROR:alert: .+,medium,alert() or array() function failed.
+.+,DEFAULT,ERROR:alert: .+,medium,alert() function failed.
 .+,DEFAULT,ERROR:array: .+,medium,array() function failed.
 .+,DEFAULT,rm: Retry count exceeded - giving up,low,File deletion permanently failed after all retries (file remains on disk).
 .+,DEFAULT,RemoveDirectory: Retry count exceeded - giving up,medium,Directory removal permanently failed after all retries.

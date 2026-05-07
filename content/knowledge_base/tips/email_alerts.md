@@ -44,13 +44,13 @@ notification are:
 | `NotifyHunts` | bool | Include flows that are part of a hunt (off by default) |
 | `DelayThreshold` | int | Only notify if the flow took longer than N seconds to complete (default 10 s) |
 
-The parameter `Errorhandling` lets failed flows bypass filters:
+The parameter `ErrorHandling` lets failed flows bypass filters:
 
 | Choice | Description |
 | ------ | ----------- |
 | IncludeHunts | Create notifications for failed flows part of hunts (may be noisy!) |
 | IgnoreCancelled | Do not consider a cancelled flow a failure (enabled by default) |
-| IgnoreArtifactFilters | Ignore `IncludeArtifact` and `ExcludeArtifact` for failed flows |
+| IgnoreArtifactFilters | Ignore `ArtifactsToAlertOn` and `ArtifactsToIgnore` for failed flows |
 | IgnoreDelay | Ignore `DelayThreshold` for failed flows |
 
 ## Throttling
@@ -74,7 +74,7 @@ The message includes client details, flow details, and optionally:
 - Direct download links to uploaded files (`IncludeUploadsTableRows`)
 
 When HTML is enabled, a plain-text alternative is also provided (using
-"multipart/alterntive"). E-mail clients that do not support HTML can
+"multipart/alternative"). E-mail clients that do not support HTML can
 still view the e-mails.
 
 For `IncludeResultTableFrom`, rows, columns, and cell values are
@@ -129,15 +129,15 @@ addresses, use `NotifyExecutorDomains` to map them: a row
 
 You have scheduled a collection on an offline client. Set
 `DelayThreshold` to something larger than the expected completion time
-time (e.g. 300 for five minutes) so you are only notified when the
+(e.g. 300 for five minutes) so you are only notified when the
 client had to wait. Use `NotifyExecutor` to send the result to the
 analyst who scheduled it, and set `IncludeResultAttachmentFrom` to
 attach the results directly to the e-mail so the analyst does not
 need to open the GUI at all.
 
 When collecting artifacts from individual clients (i.e. not through
-hunts), it may be easy to forget about the collection. — Especially if
-the client is not online when the flow was scheduled. Getting an
+hunts), it may be easy to forget about the collection — especially if
+the client was not online when the flow was scheduled. Getting an
 e-mail notification when the flow fails or completes is very useful.
 
 ### Get notified when hunt flows fail

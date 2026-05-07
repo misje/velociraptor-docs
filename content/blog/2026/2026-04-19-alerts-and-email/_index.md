@@ -58,7 +58,7 @@ Two of the artifacts introduced here send e-mail directly:
 
 The remaining artifacts, and most of the examples, produce alerts. If
 you want alerting but not e-mail notifications, the error monitoring
-and the use of [`alert()`](/vql_reference/other/alert/) for detection are still relevant. You need
+and the use of [`alert()`](/vql_reference/other/alert/) for detection are still relevant. You
 only need to use or write/adjust a monitoring artifact to produce
 notifications, for example Slack or Teams, for alerts produced.
 
@@ -92,7 +92,7 @@ worth knowing about before going to production.
 ## Flow-completion notifications
 
 [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/) watches
-[`System.Flow.Completion`](/artifact_references/pages/system.flow.completion)
+[`System.Flow.Completion`](/artifact_references/pages/system.flow.completion/)
 and sends an e-mail when a client flow finishes. The default e-mail
 includes client details, flow metadata (creator, timestamps, duration,
 requested artifacts, arguments), and a result summary.
@@ -101,9 +101,9 @@ requested artifacts, arguments), and a result summary.
 
 ![Flow-completion e-mail: flow section](/knowledge_base/tips/email_alerts/ff_flow.png)
 
-The artifact comes with a great number of parameters, most filters
-that let you configure in detail when and for what to be notified. You
-should read through the description and uses cases and pick suitable
+The artifact comes with a great number of parameters, most being
+filters that let you configure in detail when and for what to be notified. You
+should read through the description and use cases and pick suitable
 arguments. Some of the parameters are:
 
 - `ArtifactsToAlertOn`/`ArtifactsToIgnore`: regex match on the
@@ -136,7 +136,7 @@ at once.
   notification for a flow that finishes immediately is not very
   useful, set `DelayThreshold` to a few seconds or minutes. The idea
   is to get notified when a collection finishes some time in the
-  future, so that its results are not forgot.
+  future, so that its results are not forgotten.
 - **Audit shell access**: Set `ArtifactPermToAlertOn` to `EXECVE` and
   `DelayThreshold` to `0`. Every completed flow that involved a shell
   artifact (or any artifact that allows for arbitrary code execution
@@ -170,12 +170,12 @@ for more information.
 Flow-completion notifications fire on every flow that passes the
 filters, regardless of what the flow actually found. Alerts are
 different: the artifact author chooses when to surface something worth
-attention, such as when a honey file is accessed, a YARA rule matches,
-or when an IoC is detected in the system log. The
+attention, such as when a honey file is accessed, when a YARA rule
+matches, or when an IoC is detected in the system log. The
 [`alert()`](/vql_reference/other/alert/) function is how that signal
 is sent. Alerts are created very much like log entries, but as opposed
 to logs, alerts are sent to the queue
-[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts),
+[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/),
 which server event artifacts can subscribe to.
 
 ```vql
@@ -190,11 +190,11 @@ SELECT alert(
 FROM ...
 ```
 
-The `name` argument is required. Everything else are free-form
-arguments acting as context, available as individual columns in the
-internal [`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/) artifact. Identical `name`s are
-deduplicated for two hours by default; pass `dedup=-1` to disable the
-suppression while testing.
+The `name` argument is required. Every other argument is free-form
+context, available as an individual column in the internal
+[`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/)
+artifact. Identical names are deduplicated for two hours by default;
+pass `dedup=-1` to disable the suppression while testing.
 
 Although [`alert()`](/vql_reference/other/alert/) can be used in VQL anywhere, it makes the most
 sense to use it in event artifacts. Collections and hunts finish or
@@ -217,9 +217,9 @@ information may be optionally disabled.
 
 ### Where to call `alert()`
 
-There are two ways to alert on detections in client monitoring:
-directly in the client event artifact, or in a server event
-artifact watching the client event artifact.
+There are two places to call [`alert()`](/vql_reference/other/alert/) for
+detections in client monitoring: directly in the client event artifact,
+or in a server event artifact watching the client event artifact.
 
 The simplest place is inside the artifact that detects the
 condition. If you do not want to modify the existing artifact, or
