@@ -4,12 +4,13 @@ description: |
   Send an e-mail when a client flow completes (success or failure), with optional
   HTML formatting, result tables, and file attachments.
 
-  This artifact monitors [`System.Flow.Completion`](/artifact_references/pages/system.flow.completion/) and sends an e-mail when
-  certain conditions are met. You may filter by artifact name, client labels,
-  hunt participation, hunt labels, flow creation–completion delay, flow
-  outcome, artifact permissions, and more. You may also override the normal
-  filters with label-based exceptions that notify only when results or
-  uploads are present.
+  This artifact monitors
+  [`System.Flow.Completion`](/artifact_references/pages/system.flow.completion/)
+  and sends an e-mail when certain conditions are met. You may filter
+  by artifact name, client labels, hunt participation, hunt labels,
+  flow creation–completion delay, flow outcome, artifact permissions,
+  and more. You may also override the normal filters with label-based
+  exceptions that notify only when results or uploads are present.
 
   Features:
 
