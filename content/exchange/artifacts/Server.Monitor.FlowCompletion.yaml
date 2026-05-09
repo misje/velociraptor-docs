@@ -111,7 +111,7 @@ description: |
 
   | Source | Columns | MaxRows | CellLimit |
   | --- | --- | --- | --- |
-  | bash\|powershell | Stdout\|Stderr | 20 | 1000 |
+  | bash\|powershell | stdout\|stderr | 20 | 1000 |
   | generic\.client\.vql$ | .+ | | 3000 |
 
   ### New client notification
@@ -1255,7 +1255,7 @@ sources:
           SELECT *
           FROM flow_results(client_id=ClientId, flow_id=FlowId, artifact=Artifact)
         },
-                             include=Columns)
+                             include='(?i)' + Columns)
         },
                    MaxRows=MinVal(A=MaxRows, B=ArtifactResultsAbsoluteMaxRows),
                    MaxCols=ResultTableMaxColumns,
@@ -1344,7 +1344,7 @@ sources:
           FROM flow_results(client_id=ClientId, flow_id=FlowId, artifact=Artifact)
         })
         },
-                             include=Columns)
+                             include='(?i)' + Columns)
         })
           GROUP BY Path
         })
