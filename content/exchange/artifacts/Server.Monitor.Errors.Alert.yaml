@@ -54,8 +54,7 @@ description: |
   these, either add your own checks that log `ERROR` to artifacts, or
   match the native log messages with `IncludeFilter`. See [this
   reference](/knowledge_base/tips/vql_error_catalogue/) for a list of
-  regexes matching known `DEFAULT`-level errors that is worth
-  monitoring.
+  regexes matching `DEFAULT`-level errors worth monitoring.
 
   #monitoring #alerts #notifications #errors
 

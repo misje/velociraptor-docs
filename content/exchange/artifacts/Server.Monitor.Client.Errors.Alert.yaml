@@ -33,7 +33,7 @@ description: |
 
   | Artifact | Level | Message | Severity | Explanation |
   | -------- | ----- | ------- | -------- | ----------- |
-  | .+ | DEFAULT | watch_ebpf: flags.PrepareFilterMapsFromPolicies: policy \S+ already exist | medium | eBPF policy conflict (fixed in 0.76.1) |
+  | .+ | DEFAULT | watch_ebpf: flags.PrepareFilterMapsFromPolicies: policy \S+ already exists? | medium | eBPF policy conflict (fixed in 0.76.1) |
   | .+ | DEFAULT | fork/exec .+ no such file or directory | high | Executable not found on system |
   | .+ | ERROR | .+ | medium | |
 
@@ -42,7 +42,7 @@ description: |
   `DEFAULT`-level one), but it would definitely break important functionality
   in most artifacts. We also pick up eBPF policy name conflicts — a bug fixed
   in 0.76.1, which prevented eBPF monitoring from working in older versions
-  when there was more than one artifact using eBPF monitoring.
+  when more than one eBPF-using artifact was active.
 
   Remember that the filters are matched from top to bottom, so put your most
   specific filters at the top.
@@ -52,8 +52,7 @@ description: |
   these, either add your own checks that log `ERROR` to artifacts, or
   match the native log messages with `IncludeFilter`. See [this
   reference](/knowledge_base/tips/vql_error_catalogue/) for a list of
-  regexes matching known `DEFAULT`-level errors that is worth
-  monitoring.
+  regexes matching `DEFAULT`-level errors worth monitoring.
 
   Note that this artifact periodically iterates over **all** clients in
   order to query their monitoring logs. The work is parallelised across

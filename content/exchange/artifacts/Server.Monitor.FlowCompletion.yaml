@@ -14,7 +14,7 @@ description: |
   Features:
 
   - Notify configured recipients, either from a list or from a client
-    metadata field, and optionally (also) the flow executor
+    metadata field, and optionally the flow executor
   - Include client and flow context (metadata, timestamps, duration,
     arguments)
   - Include direct download links to uploaded files
@@ -60,8 +60,10 @@ description: |
 
   ## Configuration
 
-  See [How to send e-mails from Velociraptor](/knowledge_base/tips/email_alerts/)
-  for how to create SMTP secrets and how to use this artifact.
+  See [How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/)
+  for how to create SMTP secrets, and
+  [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
+  for how to use this artifact.
 
   ## Example use cases
 

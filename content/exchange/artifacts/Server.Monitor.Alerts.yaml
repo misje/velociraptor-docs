@@ -8,8 +8,8 @@ description: |
   server time, message, artifact name/type, and any context passed to [`alert()`](/vql_reference/other/alert/).
 
   Output can be sent as either HTML or plain text. Nested alert context can be
-  flattened to make complex values easier to read, and per-field and total row
-  limits help keep notifications compact.
+  flattened to make complex values easier to read, and per-field length
+  limits and a total-row cap help keep notifications compact.
 
   Additional client metadata may be included through `ClientMetadata`, which is
   useful for adding context such as serial number, owner, or any other custom
@@ -216,8 +216,8 @@ parameters:
       Member,Regex,Replace
       level,(?i)warn,medium
       level,(?i)error,high
-      Level,,
-      Level,,
+      Level,(?i)warn,medium
+      Level,(?i)error,high
       severity,,
       Severity,,
 
@@ -257,8 +257,8 @@ parameters:
     type: int
     description: |
       Maximum number of characters to display for each context field name.
-      Applied after flattening/unnesting if `FlattenContext` is set. Too
-      long names are elided in the middle. Absolute max limit is 1,000.
+      Applied after flattening/unnesting if `FlattenContext` is set. Names
+      that are too long are elided in the middle. Absolute max limit is 1,000.
     default: 100
 
   - name: ContextValueLimit
