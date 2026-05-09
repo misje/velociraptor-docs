@@ -176,6 +176,12 @@ description: |
 type: SERVER_EVENT
 
 parameters:
+  - name: Secret
+    description: |
+      Secret used to configure server, port, username, password and skip_verify.
+      Required.
+    default: notify_mail_secret
+
   - name: Recipients
     type: csv
     description: |
@@ -305,12 +311,6 @@ parameters:
       immediately (typically clients that are already online). Set to 0 to
       disable the filter and notify on every completion.
     default: 10
-
-  - name: Secret
-    description: |
-      Secret used to configure server, port, username, password and skip_verify.
-      Required.
-    default: notify_mail_secret
 
   - name: SendInterval
     type: int
