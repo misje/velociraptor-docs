@@ -699,7 +699,7 @@ export: |
   LET FullTable(Rows, Headers=NULL, MaxRows=NULL, MaxCols=100,
   MaxCellLength=NULL, MaxHeaderLength=30, FormatData=true) =
       if(
-        condition=Rows,
+        condition=Rows AND (Headers OR items(item=Rows[0])._key),
         then=template(
           template='''<table>
       {{- if .headers }}
