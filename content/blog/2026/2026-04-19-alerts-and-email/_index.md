@@ -301,6 +301,23 @@ See
 [How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/)
 for a full walkthrough.
 
+## Using in-app user messages
+
+You can supplement e-mail notifications with in-app notifications ("user messages") by using
+[`Server.Monitor.Alerts.UserMessage`](/exchange/artifacts/pages/server.monitor.alerts.usermessage/)
+This simple artifact posts each matching alert as an in-app user
+message in addition to (or instead of) an e-mail. Logged-in users see
+the notification when they open the message panel from the bell icon
+in the lower-left corner of the web app. The bell turns red when there
+are unread messages, and the list can be cleared from the panel.
+
+![The in-app message panel showing an alert posted by Server.Monitor.Alerts.UserMessage](/knowledge_base/tips/vql_alerts/global_messages.svg)
+
+User messages have no formatting and only show a nested dict. However,
+since you are already in the Velociraptor web app, the additional
+details provided in the e-mail notifications are not needed: Simply
+navigate to the source of the alert and investigate.
+
 ## Summary
 
 If you want to try out all of the discussed monitoring:
@@ -320,7 +337,10 @@ If you want to try out all of the discussed monitoring:
 5. Optionally add [`Server.Monitor.Client.Errors.Alert`](/exchange/artifacts/pages/server.monitor.client.errors.alert/), scoped to the
    handful of client event artifacts you feel the need to monitor
    closely for errors.
-6. Set `SendInterval` to `-1` once the configuration is settled. The
+6. Optionally add
+   [`Server.Monitor.Alerts.UserMessage`](/exchange/artifacts/pages/server.monitor.alerts.usermessage/)
+   to enable in-app user messages for alert notifications.
+7. Set `SendInterval` to `-1` once the configuration is settled. The
    default 10-second window silently drops bursts. This is useful
    while tuning, but could be problematic in production when you
    expect to be alerted.

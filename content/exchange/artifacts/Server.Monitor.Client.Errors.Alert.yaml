@@ -24,7 +24,9 @@ description: |
   If `SeverityField` is set, the alert will also include a severity value taken
   from the matching `IncludeFilter` row's `Severity` column. This can be used
   by [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
-  to format, filter, and forward the alert as an e-mail notification.
+  to format, filter, and forward the alert as an e-mail notification, or by
+  [`Server.Monitor.Alerts.UserMessage`](/exchange/artifacts/pages/server.monitor.alerts.usermessage/)
+  to post it as an in-app notification.
 
   Any extra columns added to `IncludeFilter` are passed through to the alert
   under the same name as extra context. For instance, if you want to add a

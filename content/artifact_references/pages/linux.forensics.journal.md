@@ -131,5 +131,26 @@ sources:
         FROM source()
         ORDER BY Timestamp
 
+    - type: vql_suggestion
+      name: Timeline
+      template: |
+        /*
+        {{ "Journal" | Timeline }}
+        */
+        LET _ &lt;= SELECT
+            timeline_add(key='Timestamp',
+                        message_column='Message',
+                        name='journal',
+                        timeline='Journal',
+                        query={
+            SELECT System.Timestamp AS Timestamp,
+                  ClientId AS _ClientId,
+                  System AS _System,
+                  EventData AS _EventData,
+                  EventData.MESSAGE AS Message
+            FROM source()
+            ORDER BY Timestamp
+          })
+          FROM scope()
 </code></pre>
 

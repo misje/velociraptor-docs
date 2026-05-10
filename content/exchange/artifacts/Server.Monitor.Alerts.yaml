@@ -95,6 +95,11 @@ description: |
   the notification refers to the monitored artifact rather than the wrapper
   server event artifact.
 
+  See also
+  [`Server.Monitor.Alerts.UserMessage`](/exchange/artifacts/pages/server.monitor.alerts.usermessage/)
+  for a lightweight alternative that posts alerts as in-app user
+  notifications instead of e-mails.
+
   #monitoring #alerts #notifications
 
 type: SERVER_EVENT
