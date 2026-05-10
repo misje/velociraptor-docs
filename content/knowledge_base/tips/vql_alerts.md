@@ -252,15 +252,16 @@ FROM items(item={
   })
 ```
 
-## Receiving alerts by e-mail
+## Receiving alerts
 
 Alerts on their own are not useful unless you get notified. There are
 many ways to achieve this — for instance, by calling a web hook or an
 API to create notifications in services like Slack, Mattermost, Teams
-or Google Chat. Sending e-mails is another good option, and is the
-method covered here. Look through the artifact documentation,
-including the exchange artifact reference, for other notification
-artifacts.
+or Google Chat. The two methods covered here are e-mail and in-app
+user messages. Look through the artifact documentation, including the
+exchange artifact reference, for other notification artifacts.
+
+### By e-mail
 
 [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
 watches [`Server.Internal.Alerts`](/artifact_references/pages/server.internal.alerts/) and sends an e-mail for each matching
@@ -300,10 +301,38 @@ Set `SeverityThreshold` to `["medium", "high"]` to suppress
 low-severity alerts. The derived severity appears in the notification
 subject and body.
 
+### As in-app user messages
+
+[`Server.Monitor.Alerts.UserMessage`](/exchange/artifacts/pages/server.monitor.alerts.usermessage/)
+is a simple artifact that posts each matching alert as an in-app user
+message in addition to (or instead of) an e-mail. Logged-in users see
+the notification when they open the message panel from the bell icon
+in the lower-left corner of the web app. The bell turns red when there
+are unread messages, and the list can be cleared from the panel.
+
+![The in-app message panel showing an alert posted by Server.Monitor.Alerts.UserMessage](global_messages.svg)
+
+The artifact filters by `Recipients` (regex on usernames) and
+`RecipientRoles` (regex on roles, defaulting to `admin`), so only
+the relevant users are notified. `AlertMsgInclude` and
+`AlertMsgExclude` further narrow which alerts are forwarded.
+
+The message itself is simple and is just a sender
+(`VelociraptorServer`) and a single `Message` column rendered as a
+nested dict. HTML e-mails support richer formatting, and 
+[`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+provides additional tables with client, flow and artifact details.
+
+Use the in-app notifications in order to get immediate attention to
+alerts while using the Velociraptor GUI, and e-mail notifications to
+get a solid amount of information about the alert and its origin when
+not using the app.
+
 ## See also
 
 - Create a server-side alert: [`alert()`](/vql_reference/other/alert/)
 - Forward alerts by e-mail: [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/)
+- Forward alerts as in-app messages: [`Server.Monitor.Alerts.UserMessage`](/exchange/artifacts/pages/server.monitor.alerts.usermessage/)
 - [How to send e-mails from Velociraptor](/knowledge_base/tips/sending_email/)
 - [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
 - [How to monitor event artifact errors](/knowledge_base/tips/monitoring_artifact_errors/)
