@@ -156,7 +156,9 @@ useful for debugging encoding issues.
 Start it with Docker:
 
 ```sh
-docker run -d --name mailpit -p 8025:8025 -p 1025:1025 axllent/mailpit
+docker run -d --name mailpit \
+    -p 127.0.0.1:8025:8025 -p 127.0.0.1:1025:1025 \
+    axllent/mailpit
 ```
 
 To persist captured e-mails across restarts, mount a volume:
@@ -261,10 +263,18 @@ SELECT * FROM Artifact.Generic.Utils.SendEmail(
 )
 ```
 
+{{% notice info %}}
+Some e-mail clients (like Evolution) do not follow the RFC 2045
+specification and fail to parse e-mails with boundaries using
+certain characters. Set `UseSimpleBoundary` to "true" in
+[`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
+to support such clients.
+{{% /notice %}}
+
 ## See also
 
 - Built-in e-mail sending function: [`mail()`](/vql_reference/other/mail/)
-- Full MIME encoding, HTML, and attachments: [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
+- E-mail sending helper artifact: [`Generic.Utils.SendEmail`](/artifact_references/pages/generic.utils.sendemail/)
 - [How to set up e-mail notifications for flow completions](/knowledge_base/tips/email_alerts/)
 - [Using alerts in Velociraptor](/knowledge_base/tips/vql_alerts/)
 

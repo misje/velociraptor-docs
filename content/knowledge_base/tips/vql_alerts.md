@@ -17,7 +17,9 @@ which forwards them by e-mail.
 ## Creating an alert
 
 Alerts can be created from anywhere where VQL can be executed:
-notebooks, client artifacts, server artifacts, or event artifacts.
+notebooks, client artifacts, server artifacts, event artifacts, the
+API or the CLI.
+
 Call [`alert()`](/vql_reference/other/alert/) the same way as
 [`log()`](/vql_reference/popular/log/):
 
@@ -41,6 +43,12 @@ useful the resulting notification will be.
 By default, identical alert names are suppressed for 2 hours
 (`dedup=7200`). Set `dedup=-1` to disable deduplication entirely, or
 set a shorter interval when testing.
+
+Say you are alerting on a detection. If the alert name includes the
+client ID or hostname, you will get one alert per client within the
+deduplication window. If it also includes the detected item (e.g. a
+filename), you will get a new alert when a different item is detected
+on the same client in the same window.
 
 ---
 

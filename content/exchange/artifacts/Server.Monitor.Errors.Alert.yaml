@@ -92,12 +92,13 @@ parameters:
     type: csv
     description: |
       Reject log entries matching one of these rows, applied after
-      `IncludeFilter`. The default excludes [`Server.Monitor.Alerts`](/exchange/artifacts/pages/server.monitor.alerts/) and this
-      artifact itself to avoid alerting loops when the notification pipeline
-      logs its own errors.
+      `IncludeFilter`. The default excludes artifacts that would
+      create alert loops if they fail, so do not remove them from the
+      filter.
     default: |
       Artifact,Level,Message
       Server\.Monitor\.Alerts$,.+,.+
+      Server\.Monitor\.Alerts\.UserMessage$,.+,.+
       Server\.Monitor\.Errors\.Alert$,.+,.+
 
   - name: SeverityField

@@ -1,7 +1,5 @@
 # How to set up e-mail notifications for flow completions
 
-<!-- TODO: Expand this article -->
-
 [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
 sends an e-mail when a client flow completes, with support for HTML
 formatting, inline result tables, and file attachments. It monitors
@@ -43,6 +41,8 @@ notification are:
 | `ClientLabelsToAlertOn` / `ClientLabelsToIgnore` | regex | Filter by client label |
 | `NotifyHunts` | bool | Include flows that are part of a hunt (off by default) |
 | `DelayThreshold` | int | Only notify if the flow took longer than N seconds to complete (default 10 s) |
+
+`ArtifactsToIgnore` does not take effect when multiple artifacts are collected.
 
 The parameter `ErrorHandling` lets failed flows bypass filters:
 
@@ -94,6 +94,8 @@ connection summary and results from querying disk usage:
 | Windows\.Network\.Netstat | RemoteAddr\|ProcessName\|Pid | 30 | 200 |
 | DiskSpace$ | Filesystem\|Size\|Avail\|Use% | | |
 
+All regexes are case-insensitive.
+
 ![Results from the DiskSpace artifact, including a JSONL attachment, in Mailpit](ds_results.png)
 
 `IncludeResultAttachmentFrom` has no row or column limits, but if the
@@ -131,9 +133,9 @@ You have scheduled a collection on an offline client. Set
 `DelayThreshold` to something larger than the expected completion time
 (e.g. 300 for five minutes) so you are only notified when the
 client had to wait. Use `NotifyExecutor` to send the result to the
-analyst who scheduled it, and set `IncludeResultAttachmentFrom` to
-attach the results directly to the e-mail so the analyst does not
-need to open the GUI at all.
+analyst who scheduled it, and/or set `Recipients`, and set
+`IncludeResultAttachmentFrom` to attach the results directly to the
+e-mail so the analyst does not need to open the GUI at all.
 
 When collecting artifacts from individual clients (i.e. not through
 hunts), it may be easy to forget about the collection — especially if
@@ -201,6 +203,10 @@ whenever a collection on their device finishes. This can run
 alongside `Recipients` and `NotifyExecutor`, so the analyst, a
 central mailbox, and the device owner all receive the notification
 independently.
+
+Some jurisdictions require notifying the device owner when certain
+data is collected from their endpoint, and this parameter provides a
+simple automated way to meet that obligation.
 
 ## See also
 

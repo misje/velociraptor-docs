@@ -17,31 +17,34 @@ for the surrounding setup.
 
 ## Why this is not the artifact's default
 
-A row in this reference list says "the function logged something". It does
-**not** say "the artifact is broken". Whether that log entry is
-actually a fatal error depends on how the function or plugin is used:
+In some cases an error from a function is critical, in other cases it
+is expected. For example:
 
-- A failing [`read_file`](/vql_reference/popular/read_file/) is fatal if the artifact's job is to read that
-  file, but expected if the call is a best-effort probe.
-- A failing [`parse_json`](/vql_reference/parsers/parse_json/) loses data if it is part of the artifact's
-  main parsing step, but is harmless on an optional enrichment.
-- An [`upload_S3`](/vql_reference/other/upload_s3/) retry exhaustion should most likely be considered a
-  serious error. However, it really depends on the data you are
-  uploading, and the importance of not losing any information.
-- A [`glob`](/vql_reference/popular/glob/) permission denial is normal during a recursive walk; the
-  same message from a single targeted lookup is a real problem.
+- A failing [`read_file`](/vql_reference/popular/read_file/) is fatal
+  if the artifact's job is to read that file, but expected if the call
+  is a best-effort probe.
+- A failing [`parse_json`](/vql_reference/parsers/parse_json/) loses
+  data if it is part of the artifact's main parsing step, but is
+  harmless on an optional enrichment.
+- An [`upload_S3`](/vql_reference/other/upload_s3/) retry exhaustion
+  should most likely be considered a serious error. However, it really
+  depends on the data you are uploading, and the importance of not
+  losing any information.
+- A [`glob`](/vql_reference/popular/glob/) permission denial is normal
+  during a recursive walk. The same message from a single targeted
+  lookup is a real problem.
 
-Severity also varies with the deployment. A [`splunk_upload`](/vql_reference/other/splunk_upload/) failure
-could be `low` for someone forwarding only debug events, and `high`
-for someone whose entire detection pipeline depends on it.
+Severity also varies with the deployment. A
+[`splunk_upload`](/vql_reference/other/splunk_upload/) failure could
+be `low` for someone forwarding only debug events, and `high` for
+someone whose entire detection pipeline depends on it.
 
 For these reasons the alert artifacts ship with a deliberately
 conservative default: match `ERROR` and nothing else — so they do not
-spam alerts out of the box. This reference list is the menu you extend
-that default from. Copy the rows whose failure modes matter to you, adjust
-severities to your environment, and place specific patterns above
-broader catch-alls (rows are evaluated top-to-bottom and the first
-match wins).
+spam alerts out of the box. Copy the rows whose failure modes matter
+to you, adjust artifact and severities to your environment, and place
+specific patterns above broader catch-alls (rows are evaluated
+top-to-bottom and the first match wins).
 
 ## The reference list
 

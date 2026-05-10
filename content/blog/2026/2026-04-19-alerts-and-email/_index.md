@@ -4,7 +4,7 @@ description: |
   A brief introduction to Velociraptor's alert system and the new
   exchange artifacts sending e-mail notifications for flow
   completions, alerts, and event query errors.
-date: 2026-04-19T00:00:00Z
+date: 2026-05-10T00:00:00Z
 author: "Andreas Misje"
 draft: false
 tags:
@@ -60,7 +60,9 @@ The remaining artifacts, and most of the examples, produce alerts. If
 you want alerting but not e-mail notifications, the error monitoring
 and the use of [`alert()`](/vql_reference/other/alert/) for detection are still relevant. You
 only need to use or write/adjust a monitoring artifact to produce
-notifications, for example Slack or Teams, for alerts produced.
+notifications, for example Slack or Teams, for alerts produced. See
+[Using in-app user messages](#using-in-app-user-messages) for how to use Velociraptor's
+new built-in notification system.
 
 ![Simple overview of how a detection creates an e-mail](monitoring_diagram.svg)
 
@@ -99,7 +101,7 @@ requested artifacts, arguments), and a result summary.
 
 ![Flow-completion e-mail: client section](/knowledge_base/tips/email_alerts/ff_client.png)
 
-![Flow-completion e-mail: flow section](/knowledge_base/tips/email_alerts/ff_flow.png)
+![Flow-completion e-mail: flow and uploads section](/knowledge_base/tips/email_alerts/ff_flow.png)
 
 The artifact comes with a great number of parameters, most being
 filters that let you configure in detail when and for what to be notified. You
@@ -128,7 +130,7 @@ mapping bare usernames to full addresses), or be pulled from a
 client metadata field (`NotifyMetadataEMail`). All three can be used
 at once.
 
-###### A few examples
+### A few examples
 
 - **Notify the analyst who ran a collection**: Set `NotifyExecutor` to
   true. If usernames are e-mail addresses, that is all you need;
@@ -146,9 +148,9 @@ at once.
   field. Useful in environments with strict privacy rules.
 - **Catch failures in a hunt**: Leave `NotifyHunts` off, but
   add `IncludeHunts` to `ErrorHandling`. Be sure to test-run your
-  hunts first, before enabling this.
+  hunts before enabling this.
 
-###### Including results in the e-mail
+### Including results in the e-mail
 
 Apart from just notifying you that a collection has completed,
 [`Server.Monitor.FlowCompletion`](/exchange/artifacts/pages/server.monitor.flowcompletion/)
