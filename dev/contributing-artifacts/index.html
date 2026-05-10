@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.161.1">
+    <meta name="description" content="This document provides guidance for contributing artifacts to the artifact exchange or the upstream repository.
+">
+
+
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+
+    <title>Guidelines for artifact contributions</title>
+
+    
+    <link href="/css/nucleus.css?1778429430" rel="stylesheet">
+    <link href="/css/font-awesome-all.min.css?1778429430" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1778429430" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1778429430" rel="stylesheet">
+    <link href="/css/auto-complete.css?1778429430" rel="stylesheet">
+    <link href="/css/theme.css?1778429430" rel="stylesheet">
+    <link href="/css/tabs.css?1778429430" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1778429430" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css"
+      integrity="sha384-WcoG4HRXMzYzfCgiyfrySxx90XSl2rxY5mnVY5TwtWE6KLrArNKn0T/mOgNL0Mmi"
+      crossorigin="anonymous"
+      >
+    
+    <link href="/css/theme-mine.css?1778429430" rel="stylesheet">
+    
+    <link href="/css/dark.css?1778429430" rel="stylesheet"><link href="/css/syntax.css?1778429430" rel="stylesheet"><link href="/css/light.css?1778429430" rel="stylesheet"><link href="/css/hljs.css?1778429430" rel="stylesheet"><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css?1778429430" rel="stylesheet">
+
+    <script src="/js/jquery-3.3.1.min.js?1778429430"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+
+<script>
+
+
+</script>
+
+  </head>
+  <body class="" data-url="/dev/contributing-artifacts/">
+    
+    <script src="/js/theme.js"></script>
+
+<nav id="sidebar" class=""><div id="header-wrapper">
+    <div id="header">
+      <a href="https://docs.velociraptor.app/">
+  <img class="logo dark" alt="logo dark" src="https://docs.velociraptor.app//images/VeloR7_DarkMode.svg" />
+  <img class="logo light" alt="logo light" src="https://docs.velociraptor.app//images/VeloR7_LightMode.svg" />
+</a>
+
+<div class="ThemeSelector darkmode">
+  <i class="fas fa-moon"></i>
+</div>
+
+<div class="ThemeSelector lightmode">
+  <i class="fas fa-sun"></i>
+</div>
+
+<script>
+  const regex = new RegExp('theme=darkmode');
+  if (regex.test(document.cookie)) {
+      $("body").addClass("dark").removeClass("light");
+  } else {
+      $("body").addClass("light").removeClass("dark");
+  }
+
+  $(".ThemeSelector.darkmode").on("click", function(e) {
+      $("body").addClass("dark").removeClass("light");
+      document.cookie = "theme=darkmode;path=/";
+      return false;
+  });
+
+  $(".ThemeSelector.lightmode").on("click", function(e) {
+      $("body").addClass("light").removeClass("dark");
+      document.cookie = "theme=lightmode;path=/";
+      return false;
+  });
+
+</script>
+
+    </div>
+    
+  </div>
+  
+
+    
+    
+       
+    
+
+    
+
+    <script src="/js/menu-e7b4452b.js" type="text/javascript"></script>
+
+    <div class="highlightable">
+      <ul class="sidemenu sidebar hidden"></ul>
+    <hr />
+    
+    
+      <section id="shortcuts">
+        <h3></h3>
+        <ul>
+          
+              <li>
+                  <a rel="nofollow" class="padding" href="https://github.com/Velocidex/velociraptor"><i class='fab fa-github'></i>GitHub</a>
+              </li>
+          
+              <li>
+                  <a rel="nofollow" class="padding" href="https://docs.velociraptor.app/discord/"><i class='fab fa-discord'></i>Discord</a>
+              </li>
+          
+              <li>
+                  <a rel="nofollow" class="padding" href="https://docs.velociraptor.app/youtube/"><i class='fab fa-youtube'></i>YouTube</a>
+              </li>
+          
+              <li>
+                  <a rel="nofollow" class="padding" href="mailto:velociraptor-discuss@googlegroups.com"><i class='fas fa-envelope'></i>Mailing List</a>
+              </li>
+          
+              <li>
+                  <a rel="nofollow" class="padding" href="https://docs.velociraptor.app/rss/"><i class='fas fa-rss'></i>RSS</a>
+              </li>
+          
+              <li>
+                  <a rel="nofollow" class="padding" href="https://docs.rapid7.com/insightidr/velociraptor-integration/"><i class='fa fa-question-circle'></i>Rapid7 Docs</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="footer">
+      <div class="footer-copyright">Brought to you by
+  <img src="/images/Rapid7_logo.svg" alt="rapid7 logo" class="rapid7">
+  <br> <i class="fas fa-copyright"></i> 2025
+</div>
+
+    </section>
+  </div>
+</nav>
+
+<script>
+
+  findlink(window.menu, "\/dev\/contributing-artifacts\/");
+
+  let menu = $(".sidemenu.hidden");
+  addToNode(menu, window.menu);
+
+  menu.find("i.fa-angle-right").each(function() {
+      $( this ).parent().parent().find("ul").hide();
+  });
+
+  
+  menu.removeClass("hidden");
+
+  
+  $(window).on('load', function(){
+      $("li.dd-item.active").each(function() {
+          $(this)[0].scrollIntoView();
+      })
+  })
+
+  menu.find("li.dd-item.active").each(function() {
+      $(this)[0].scrollIntoView();
+  })
+
+
+  menu.find("li[linkTo]").click(function(e) {
+      let target = $(this).attr("linkTo");
+      return navigateTo(target);
+  });
+
+  
+  $(document).ready(function () {
+      decorateLinks();
+  });
+
+</script>
+
+    
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable scroller">
+          
+          
+          
+          
+          
+             
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='Edit this page' href="https://github.com/Velocidex/velociraptor-docs/edit/master/content/dev/contributing-artifacts/_index.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text">Edit this page</span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://schema.org/BreadcrumbList">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links" itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem">
+                 
+                 
+                    <span itemprop="item"><span itemprop="name">Guidelines for artifact contributions</span></span>
+                    <meta itemprop="position" content="1" />
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#triage-artifacts">Triage artifacts</a></li>
+    <li><a href="#registry-parsing">Registry parsing</a></li>
+    <li><a href="#parsing-browser-or-os-artifacts">Parsing browser or OS artifacts</a></li>
+    <li><a href="#where-should-i-contribute-my-artifact">Where should I contribute my artifact?</a></li>
+    <li><a href="#tips-for-writing-better-vql">Tips for writing better VQL</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          <div id="loading">
+            <i class="fas fa-spinner fa-spin fa-10x"></i>
+          </div>
+          
+            <h1>
+              
+              Guidelines for artifact contributions
+            </h1>
+            
+          
+
+        
+
+
+
+	<p>Velociraptor is an open source community driven project, and as such
+we accept contributions from the community. Velociraptor&rsquo;s VQL
+language is designed to lower the bar for contributions and make it
+easier for non-developers to contribute meaningful improvements in the
+form of new <a href="/docs/artifacts/">Artifacts</a>.</p>
+<p>Over time the number of contribution has exploded and so we have
+developed some guidelines on which artifacts should be accepted into
+the project and where/how they should be included.</p>
+
+<div class="mynotices tip">
+  <div heading=" Maintaining your own artifacts "><p>Velociraptor&rsquo;s philosophy is to be as flexible as possible and be
+useful in many different use cases. This means that users usually
+maintain a set of custom artifacts that suite their own particular
+workflows specific to their requirements.</p>
+<p>This is fine! You are welcome to maintain your own set of
+artifacts. However, to contribute back into the project we require the
+artifacts to be useful to a wider community. Artifacts that handle a
+very specific and unique task are probably not that useful broadly and
+won&rsquo;t be accepted for contribution.</p>
+</div>
+</div>
+
+
+<p>Over time we found some general patterns for many artifacts and so we
+have created a set of high level artifacts to handle the common cases.</p>
+<h2 id="triage-artifacts">Triage artifacts</h2>
+<p>Triage artifacts typically consist of:</p>
+<ol>
+<li>Search for files using <code>glob()</code></li>
+<li>Collect the files using <code>upload()</code> and possibly hash the with <code>hash()</code></li>
+<li>Enrich the collection somehow (for example using <code>authenticode()</code></li>
+</ol>
+<p>This pattern is so common that we built the <a href="https://triage.velocidex.com/" target="_blank" >The Velociraptor Triage
+Artifact project</a> to automatically
+produce a set of such triage artifacts based on
+<a href="https://triage.velocidex.com/docs/windows.triage.targets/rules/" target="_blank" >rules</a></p>
+<p>The advantages of centralizing these triage artifacts include:</p>
+<ol>
+<li>Users only have one artifact to collect, instead of remembering
+hundreds of specific small artifact.</li>
+<li>Rules can be grouped into larger rules so in most cases users need
+to select a few high level rules (for example <code>_Live</code> to collect all
+live system artifacts)</li>
+<li>The run time of the artifact can be optimized, even when searching
+for hundreds of rules at the same time.</li>
+<li>More complex techniques like <a href="/blog/2025/2025-09-28-adaptive-collections/">Adaptive
+Triage</a> can be
+implemented. All rules benefit from this without having to
+implement it individually.</li>
+<li>Being part of a large active project means the rules are more
+likely to be maintained going forward.</li>
+</ol>
+<p>Usually if your artifact falls into the above pattern, we will direct
+you to add a rule to the triage artifacts.</p>
+<h2 id="registry-parsing">Registry parsing</h2>
+<p>Parsing data in the registry is a very common goal which typically
+consists of:</p>
+<ol>
+<li>Searching the registry for keys/values.</li>
+<li>Parsing the values using e.g. <code>parse_binary()</code> or simply displaying
+them.</li>
+</ol>
+<p>This pattern is so common that we built the <a href="https://registry-hunter.velocidex.com/" target="_blank" >The Registry Hunter
+project</a> to automatically
+produce a set of such triage artifacts based on
+<a href="https://registry-hunter.velocidex.com/docs/rules/" target="_blank" >rules</a></p>
+<p>The advantages of centralizing registry analysis include:</p>
+<ul>
+<li>Handling the registry correctly is very challenging and there are
+many edge cases. For example, when accessing the <code>HKEY_USERS</code> hive,
+only currently logged in users will have their hive mounted
+there. The Registry Hunter automatically handles these cases by
+mounting the raw hives into the a remapping configuration.</li>
+<li>More complex techniques like <a href="/blog/2025/2025-09-28-adaptive-collections/">Adaptive
+Triage</a> can be
+implemented. All rules benefit from this without having to implement
+it individually.</li>
+</ul>
+<p>Usually if your artifact falls into the above pattern, we will direct
+you to add a rule to the registry hunter.</p>
+<h2 id="parsing-browser-or-os-artifacts">Parsing browser or OS artifacts</h2>
+<p>This is a common use case, which originally focused on SQLite files,
+but can now handle many more file formats:</p>
+<ol>
+<li>Search for files using a <code>glob()</code></li>
+<li>When a file is found, run a test on it to determine if the rule
+should match. For SQLite files, we can check for the presence of
+expected tables or schema.</li>
+<li>Parse the file - with SQLite files this may consist of running a
+SQL query.</li>
+<li>Enrich and manipulate the results using VQL</li>
+</ol>
+<p>The advantages of centralizing SQLite analysis:</p>
+<ul>
+<li>
+<p>The user simply collects one artifact on the endpoint, specifying
+some broad constraints (like categories of the rule). Velociraptor
+will then automatically find and parse all the SQLite files it
+finds.</p>
+</li>
+<li>
+<p>Handle hundreds of files from different applications. For example,
+many browsers are related to Chromium but have chosen a different
+location for their files. The SQLite hunter will automatically
+search for such Chromium derived browsers in multiple locations.</p>
+</li>
+</ul>
+<p>Usually if your artifact falls into the above pattern, we will direct
+you to add a rule to the SQLite Hunter.</p>
+<h2 id="where-should-i-contribute-my-artifact">Where should I contribute my artifact?</h2>
+<p>Velociraptor comes with a large number of built in artifacts ready to
+use when installed. This makes it convenient because they are already
+built in. However, there are hundreds of artifacts available on the
+<a href="/exchange/">Artifact Exchange</a>.</p>
+<p>The main distinction between the two sources is around quality and
+maintainability:</p>
+<ol>
+<li>
+<p>Artifacts which are built into Velociraptor are useful to most
+people and are extensively tested using <a href="https://github.com/Velocidex/velociraptor/tree/master/artifacts/testdata/server/testcases" target="_blank" >automated
+tests</a>. If
+you wish to contribute into the built in set you should also
+include tests. These tests ensure that the artifacts are less
+likely to fail in future and help maintain them in future releases.</p>
+</li>
+<li>
+<p>The <a href="/exchange/">Artifact Exchange</a> contains many artifacts that
+were useful at one time but may have not been updated in a
+while. This may generally be of lower quality and may even break
+(and since they do not contain tests, we may not know they are
+broken).</p>
+</li>
+</ol>
+<p>For example, good candidates for the Exchange are artifacts that hunt
+for specific topical threats which may not be more widely useful in
+general (for example <code>Log4J</code>)</p>
+<p>We plan on reviewing the artifacts in the Exchange periodically and
+removing outdated artifacts.</p>
+<h2 id="tips-for-writing-better-vql">Tips for writing better VQL</h2>
+<ul>
+<li>Use the <a href="/docs/cli/artifacts/#-artifacts-verify-">artifact verifier</a>
+command to verify your artifact. This runs a static analysis of the
+artifact&rsquo;s VQL to ensure there are not major issues. I can also make
+some suggestions. When you submit your artifact, the CI pipeline
+will run the verifier on your artifact automatically and fail if the
+artifact does not pass.</li>
+</ul>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div>
+        
+
+      </div>
+
+    </section>
+
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1778429430"></script>
+    <script src="/js/perfect-scrollbar.min.js?1778429430"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1778429430"></script>
+    <script src="/js/jquery.sticky.js?1778429430"></script>
+    <script src="/js/featherlight.min.js?1778429430"></script>
+    <script src="/js/highlight.min.js?1778429430"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script src="/js/modernizr.custom-3.6.0.js?1778429430"></script>
+    <script src="/js/learn.js?1778429430"></script>
+    <script src="/js/hugo-learn.js?1778429430"></script>
+    
+    
+
+  </body>
+</html>
